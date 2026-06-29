@@ -710,6 +710,339 @@ def detectar_blocos_comprimidos(data):
         pos = proximo + 2
     return achados
 
+# ─── DESCOMPRESSÃO NINTENDO (LZ10/LZ11) ──────────────────────────────────────
+
+def descomprimir_lz10(data: bytes) -> bytes | None:
+    """LZ10: compressão Nintendo DS/GBA. Magic byte = 0x10."""
+    try:
+        if len(data) < 4 or data[0] != 0x10: return None
+        tam = int.from_bytes(data[1:4], 'little')
+        out, pos = bytearray(), 4
+        while len(out) < tam and pos < len(data):
+            flags = data[pos]; pos += 1
+            for bit in range(7, -1, -1):
+                if len(out) >= tam or pos >= len(data): break
+                if flags & (1 << bit):
+                    if pos + 1 >= len(data): break
+                    b1, b2 = data[pos], data[pos+1]; pos += 2
+                    dist, length = ((b1 & 0xF) << 8 | b2) + 1, (b1 >> 4) + 3
+                    for _ in range(length): out.append(out[-dist] if len(out) >= dist else 0)
+                else:
+                    out.append(data[pos]); pos += 1
+        return bytes(out)
+    except Exception: return None
+
+def descomprimir_lz11(data: bytes) -> bytes | None:
+    """LZ11: variante estendida do LZ10. Magic byte = 0x11."""
+    try:
+        if len(data) < 4 or data[0] != 0x11: return None
+        tam = int.from_bytes(data[1:4], 'little')
+        out, pos = bytearray(), 4
+        while len(out) < tam and pos < len(data):
+            flags = data[pos]; pos += 1
+            for bit in range(7, -1, -1):
+                if len(out) >= tam or pos >= len(data): break
+                if flags & (1 << bit):
+                    if pos >= len(data): break
+                    ind = data[pos]; pos += 1
+                    if ind >> 4 == 1:
+                        if pos + 1 >= len(data): break
+                        b2, b3 = data[pos], data[pos+1]; pos += 2
+                        length = ((ind & 0xF) << 12 | b2 << 4 | b3 >> 4) + 0x111
+                        dist = ((b3 & 0xF) << 8 | data[pos]) + 1; pos += 1
+                    elif ind >> 4 == 0:
+                        if pos >= len(data): break
+                        b2 = data[pos]; pos += 1
+                        length = ((ind & 0xF) << 4 | b2 >> 4) + 0x11
+                        dist = ((b2 & 0xF) << 8 | data[pos]) + 1; pos += 1
+                    else:
+                        if pos >= len(data): break
+                        b2 = data[pos]; pos += 1
+                        length, dist = (ind >> 4) + 1, ((ind & 0xF) << 8 | b2) + 1
+                    for _ in range(length): out.append(out[-dist] if len(out) >= dist else 0)
+                else:
+                    out.append(data[pos]); pos += 1
+        return bytes(out)
+    except Exception: return None
+
+def tentar_descomprimir_nintendo(data: bytes) -> bytes | None:
+    """Tenta LZ10, LZ11 e zlib em sequência."""
+    if not data: return None
+    r = descomprimir_lz10(data)
+    if r: return r
+    r = descomprimir_lz11(data)
+    if r: return r
+    import zlib
+    for wb in (-15, 15, 47):
+        try: return zlib.decompress(data, wb)
+        except Exception: pass
+    return None
+
+# ─── DETECÇÃO EUC-JP ──────────────────────────────────────────────────────────
+
+def detectar_texto_eucjp(data: bytes) -> list:
+    """Detecta texto EUC-JP (PS2/Saturn japoneses)."""
+    bruto, n, candidatos, i = bytes(data), len(data), [], 0
+    while i < n:
+        inicio, chars = i, 0
+        while i < n:
+            b = bruto[i]
+            if 0xA1 <= b <= 0xFE and i + 1 < n and 0xA1 <= bruto[i+1] <= 0xFE:
+                try:
+                    bruto[i:i+2].decode('euc_jp'); chars += 1; i += 2; continue
+                except UnicodeDecodeError: pass
+            if 0x20 <= b <= 0x7E: i += 1; continue
+            break
+        if chars >= 2:
+            texto = bruto[inicio:i].decode('euc_jp', errors='ignore')
+            candidatos.append((inicio, i, texto, 'eucjp'))
+        if i == inicio: i += 1
+    return candidatos
+
+def truncar_eucjp(texto: str, max_bytes: int) -> bytes:
+    melhor = b''
+    for i in range(len(texto), -1, -1):
+        enc = texto[:i].encode('euc_jp', errors='ignore')
+        if len(enc) <= max_bytes: melhor = enc; break
+    return melhor + b' ' * (max_bytes - len(melhor))
+
+# ─── PARSER NARC (Nintendo Archive — NDS) ────────────────────────────────────
+
+def parsear_narc(data: bytes) -> list | None:
+    try:
+        if data[:4] != b'NARC': return None
+        btaf_off    = 16
+        if data[btaf_off:btaf_off+4] != b'BTAF': return None
+        btaf_size   = int.from_bytes(data[btaf_off+4:btaf_off+8], 'little')
+        file_count  = int.from_bytes(data[btaf_off+8:btaf_off+10], 'little')
+        entradas = []
+        for i in range(file_count):
+            base  = btaf_off + 12 + i * 8
+            start = int.from_bytes(data[base:base+4], 'little')
+            end   = int.from_bytes(data[base+4:base+8], 'little')
+            entradas.append((start, end))
+        gmif_off = btaf_off + btaf_size
+        if data[gmif_off:gmif_off+4] == b'BTNF':
+            gmif_off += int.from_bytes(data[gmif_off+4:gmif_off+8], 'little')
+        if data[gmif_off:gmif_off+4] != b'GMIF': return None
+        dados_off = gmif_off + 8
+        return [data[dados_off+s:dados_off+e] for s, e in entradas]
+    except Exception: return None
+
+def remontar_narc(original: bytes, arquivos_novos: list) -> bytes:
+    try:
+        btaf_off   = 16
+        btaf_size  = int.from_bytes(original[btaf_off+4:btaf_off+8], 'little')
+        gmif_off   = btaf_off + btaf_size
+        btnf_chunk = b''
+        if original[gmif_off:gmif_off+4] == b'BTNF':
+            bsize = int.from_bytes(original[gmif_off+4:gmif_off+8], 'little')
+            btnf_chunk = original[gmif_off:gmif_off+bsize]; gmif_off += bsize
+        novos_dados = b''.join(arquivos_novos)
+        pad = (4 - len(novos_dados) % 4) % 4
+        novos_dados += b'\xFF' * pad
+        gmif = b'GMIF' + (len(novos_dados)+8).to_bytes(4,'little') + novos_dados
+        nova_btaf = bytearray(original[btaf_off:btaf_off+12])
+        off = 0
+        for arq in arquivos_novos:
+            nova_btaf += off.to_bytes(4,'little'); off += len(arq)
+            nova_btaf += off.to_bytes(4,'little')
+        nova_btaf[4:8] = len(nova_btaf).to_bytes(4,'little')
+        corpo  = bytes(nova_btaf) + btnf_chunk + gmif
+        header = bytearray(original[:16])
+        header[8:12] = (16+len(corpo)).to_bytes(4,'little')
+        return bytes(header) + corpo
+    except Exception: return original
+
+# ─── PARSER BMG (Binary MeSsaGe — NDS) ───────────────────────────────────────
+
+def parsear_bmg(data: bytes) -> tuple | None:
+    try:
+        if data[:8] != b'MESGbmg1': return None
+        enc_byte = data[0x0E]
+        encoding = {1:'cp1252', 2:'utf-16-le', 3:'shift_jis', 4:'utf-8'}.get(enc_byte,'utf-8')
+        n_sec = int.from_bytes(data[0x0C:0x10], 'little')
+        pos, dat1_off, inf1_off = 0x20, None, None
+        for _ in range(n_sec):
+            if pos + 8 > len(data): break
+            magic = data[pos:pos+4]
+            size  = int.from_bytes(data[pos+4:pos+8], 'little')
+            if magic == b'INF1': inf1_off = pos
+            if magic == b'DAT1': dat1_off = pos
+            pos += size; pos = (pos+3) & ~3
+        if dat1_off is None or inf1_off is None: return None
+        entry_count = int.from_bytes(data[inf1_off+8:inf1_off+10], 'little')
+        entry_size  = int.from_bytes(data[inf1_off+10:inf1_off+12], 'little')
+        dat1_base   = dat1_off + 8
+        strings = []
+        for i in range(entry_count):
+            entry_off = inf1_off + 16 + i * entry_size
+            str_off   = int.from_bytes(data[entry_off:entry_off+4], 'little')
+            raw = data[dat1_base+str_off:]
+            if encoding == 'utf-16-le':
+                end = 0
+                while end+1 < len(raw) and (raw[end]!=0 or raw[end+1]!=0): end += 2
+                s = raw[:end].decode('utf-16-le', errors='ignore')
+            else:
+                end = raw.find(b'\x00')
+                s = raw[:end].decode(encoding, errors='ignore') if end != -1 else ''
+            strings.append(s)
+        return strings, data
+    except Exception: return None
+
+def remontar_bmg(original: bytes, strings_novas: list) -> bytes:
+    try:
+        enc_byte = original[0x0E]
+        encoding = {1:'cp1252', 2:'utf-16-le', 3:'shift_jis', 4:'utf-8'}.get(enc_byte,'utf-8')
+        n_sec = int.from_bytes(original[0x0C:0x10], 'little')
+        pos, dat1_off, inf1_off = 0x20, None, None
+        for _ in range(n_sec):
+            if pos + 8 > len(original): break
+            magic = original[pos:pos+4]
+            size  = int.from_bytes(original[pos+4:pos+8], 'little')
+            if magic == b'INF1': inf1_off = pos
+            if magic == b'DAT1': dat1_off = pos
+            pos += size; pos = (pos+3) & ~3
+        if dat1_off is None or inf1_off is None: return original
+        entry_count = int.from_bytes(original[inf1_off+8:inf1_off+10], 'little')
+        entry_size  = int.from_bytes(original[inf1_off+10:inf1_off+12], 'little')
+        dat1_base   = dat1_off + 8
+        dat1_size   = int.from_bytes(original[dat1_off+4:dat1_off+8], 'little') - 8
+        novo_dat, novos_offsets = bytearray(), []
+        for i, s in enumerate(strings_novas[:entry_count]):
+            novos_offsets.append(len(novo_dat))
+            enc_s = (s.encode('utf-16-le',errors='ignore')+b'\x00\x00') if encoding=='utf-16-le' else (s.encode(encoding,errors='ignore')+b'\x00')
+            novo_dat += enc_s
+        while len(novo_dat) % 4 != 0: novo_dat += b'\x00'
+        result = bytearray(original)
+        for i, off in enumerate(novos_offsets):
+            addr = inf1_off + 16 + i * entry_size
+            result[addr:addr+4] = off.to_bytes(4,'little')
+        result[dat1_base:dat1_base+min(len(novo_dat),dat1_size)] = bytes(novo_dat)[:dat1_size]
+        return bytes(result)
+    except Exception: return original
+
+# ─── PARSER MSBT (Message Studio Binary Text — 3DS/Switch) ───────────────────
+
+def parsear_msbt(data: bytes) -> list | None:
+    try:
+        if data[:8] != b'MsgStdBn': return None
+        little = data[8:10] == b'\xFF\xFE'
+        bo, enc = ('little','utf-16-le') if little else ('big','utf-16-be')
+        n_sec = int.from_bytes(data[0x0E:0x10], bo)
+        pos, txt2_off = 0x20, None
+        for _ in range(n_sec):
+            if pos + 8 > len(data): break
+            magic = data[pos:pos+4]; size = int.from_bytes(data[pos+4:pos+8], bo)
+            if magic == b'TXT2': txt2_off = pos
+            pos += size; pos = (pos+3) & ~3
+        if txt2_off is None: return None
+        count = int.from_bytes(data[txt2_off+8:txt2_off+12], bo)
+        base  = txt2_off + 8
+        strings = []
+        for i in range(count):
+            off_addr = base + 4 + i * 4
+            str_off  = int.from_bytes(data[off_addr:off_addr+4], bo)
+            raw = data[base + str_off:]
+            end = 0
+            while end+1 < len(raw) and (raw[end]!=0 or raw[end+1]!=0): end += 2
+            s = raw[:end].decode(enc, errors='ignore')
+            s = re.sub(r'\x0e.{3}', '', s).strip()
+            if s: strings.append(s)
+        return strings
+    except Exception: return None
+
+def remontar_msbt(original: bytes, strings_novas: list) -> bytes:
+    try:
+        little = original[8:10] == b'\xFF\xFE'
+        bo, enc = ('little','utf-16-le') if little else ('big','utf-16-be')
+        n_sec = int.from_bytes(original[0x0E:0x10], bo)
+        pos, txt2_off = 0x20, None
+        for _ in range(n_sec):
+            if pos + 8 > len(original): break
+            magic = original[pos:pos+4]; size = int.from_bytes(original[pos+4:pos+8], bo)
+            if magic == b'TXT2': txt2_off = pos
+            pos += size; pos = (pos+3) & ~3
+        if txt2_off is None: return original
+        txt2_size = int.from_bytes(original[txt2_off+4:txt2_off+8], bo) - 8
+        count = int.from_bytes(original[txt2_off+8:txt2_off+12], bo)
+        base  = txt2_off + 8
+        header_size = 4 + count * 4
+        novo_dat, novos_offs = bytearray(), []
+        for s in strings_novas[:count]:
+            novos_offs.append(header_size + len(novo_dat))
+            novo_dat += s.encode(enc, errors='ignore') + b'\x00\x00'
+        while len(novo_dat) % 4 != 0: novo_dat += b'\x00'
+        result = bytearray(original)
+        for i, off in enumerate(novos_offs):
+            addr = base + 4 + i * 4
+            result[addr:addr+4] = off.to_bytes(4, bo)
+        espaco = txt2_size - header_size
+        result[base+header_size:base+header_size+espaco] = bytes(novo_dat)[:espaco]
+        return bytes(result)
+    except Exception: return original
+
+# ─── PARSER SARC (Simple ARChive — 3DS/Switch) ───────────────────────────────
+
+def parsear_sarc(data: bytes) -> dict | None:
+    try:
+        if data[:4] != b'SARC': return None
+        little = data[6:8] == b'\xFF\xFE'
+        bo = 'little' if little else 'big'
+        header_len  = int.from_bytes(data[4:6], bo)
+        data_offset = int.from_bytes(data[0x0C:0x10], bo)
+        sfat_off    = header_len
+        if data[sfat_off:sfat_off+4] != b'SFAT': return None
+        sfat_hlen  = int.from_bytes(data[sfat_off+4:sfat_off+6], bo)
+        node_count = int.from_bytes(data[sfat_off+8:sfat_off+10], bo)
+        nodes = []
+        for i in range(node_count):
+            base  = sfat_off + sfat_hlen + i * 16
+            attrs = int.from_bytes(data[base+4:base+8], bo)
+            start = int.from_bytes(data[base+8:base+12], bo)
+            end   = int.from_bytes(data[base+12:base+16], bo)
+            nodes.append((attrs, start, end))
+        sfnt_off   = sfat_off + sfat_hlen + node_count * 16
+        sfnt_hlen  = int.from_bytes(data[sfnt_off+4:sfnt_off+6], bo)
+        names_base = sfnt_off + sfnt_hlen
+        arquivos = {}
+        for (attrs, start, end) in nodes:
+            name_off = (attrs & 0xFFFF) * 4
+            nome_raw = data[names_base+name_off:]
+            nome = nome_raw[:nome_raw.find(b'\x00')].decode('utf-8', errors='ignore')
+            arquivos[nome] = data[data_offset+start:data_offset+end]
+        return arquivos
+    except Exception: return None
+
+def remontar_sarc(original: bytes, arquivos_novos: dict) -> bytes:
+    try:
+        little = original[6:8] == b'\xFF\xFE'
+        bo = 'little' if little else 'big'
+        header_len  = int.from_bytes(original[4:6], bo)
+        data_offset = int.from_bytes(original[0x0C:0x10], bo)
+        sfat_off    = header_len
+        sfat_hlen   = int.from_bytes(original[sfat_off+4:sfat_off+6], bo)
+        node_count  = int.from_bytes(original[sfat_off+8:sfat_off+10], bo)
+        sfnt_off    = sfat_off + sfat_hlen + node_count * 16
+        sfnt_hlen   = int.from_bytes(original[sfnt_off+4:sfnt_off+6], bo)
+        names_base  = sfnt_off + sfnt_hlen
+        result = bytearray(original)
+        for i in range(node_count):
+            base  = sfat_off + sfat_hlen + i * 16
+            attrs = int.from_bytes(original[base+4:base+8], bo)
+            start = int.from_bytes(original[base+8:base+12], bo)
+            end   = int.from_bytes(original[base+12:base+16], bo)
+            name_off = (attrs & 0xFFFF) * 4
+            nome_raw = original[names_base+name_off:]
+            nome = nome_raw[:nome_raw.find(b'\x00')].decode('utf-8', errors='ignore')
+            if nome in arquivos_novos:
+                novo   = arquivos_novos[nome]
+                espaco = end - start
+                result[data_offset+start:data_offset+start+espaco] = bytes(novo)[:espaco]
+        return bytes(result)
+    except Exception: return original
+
+
 def detectar_texto_shiftjis(data):
     bruto = bytes(data)
     n = len(bruto)
@@ -763,83 +1096,89 @@ def processar_binario(caminho):
     with open(caminho, 'rb') as f:
         data = bytearray(f.read())
 
+    # ── SEM tentativa de descompressão aqui ──────────────────────────────────
+    # LZ só é descomprimido dentro de processar_nds via ndspy,
+    # que sabe remontar o arquivo corretamente.
+    # Aqui fazemos varredura direta no binário original.
+
     shiftjis_cands = detectar_texto_shiftjis(data)
-    outros_cands = detectar_texto_8bit(data) + detectar_texto_16bit(data)
-    candidatos = remover_sobreposicoes(shiftjis_cands, outros_cands)
+    eucjp_cands    = detectar_texto_eucjp(data)
+    outros_cands   = detectar_texto_8bit(data) + detectar_texto_16bit(data)
+
+    cands_jp   = remover_sobreposicoes(shiftjis_cands, eucjp_cands)
+    candidatos = remover_sobreposicoes(cands_jp, outros_cands)
     candidatos.sort(key=lambda c: c[0])
 
     comprimidos = detectar_blocos_comprimidos(data)
     if comprimidos:
-        print(f"AVISO: {len(comprimidos)} bloco(s) comprimido(s) com possível texto detectados "
-              f"(ainda não reescritos automaticamente). Exemplo: \"{comprimidos[0][1]}\"", flush=True)
+        print(f"AVISO: {len(comprimidos)} bloco(s) comprimido(s) detectados. Exemplo: \"{comprimidos[0][1]}\"", flush=True)
 
     if not candidatos:
         raise Exception("Nenhum texto legível encontrado neste arquivo binário.")
 
-    n_8    = sum(1 for c in candidatos if c[3] == '8bit')
-    n_16   = sum(1 for c in candidatos if c[3] == '16bit')
-    n_sjis = sum(1 for c in candidatos if c[3] == 'shiftjis')
-    print(f"Encontrados {len(candidatos)} trecho(s) de texto "
-          f"({n_8} em 8-bit, {n_16} em 16-bit, {n_sjis} em japonês). Traduzindo...", flush=True)
+    n_8     = sum(1 for c in candidatos if c[3] == '8bit')
+    n_16    = sum(1 for c in candidatos if c[3] == '16bit')
+    n_sjis  = sum(1 for c in candidatos if c[3] == 'shiftjis')
+    n_eucjp = sum(1 for c in candidatos if c[3] == 'eucjp')
+    print(f"Encontrados {len(candidatos)} trecho(s) ({n_8} 8bit, {n_16} 16bit, {n_sjis} ShiftJIS, {n_eucjp} EUC-JP). Traduzindo...", flush=True)
 
-    indices_normais = [i for i, c in enumerate(candidatos) if c[3] != 'shiftjis']
+    indices_normais = [i for i, c in enumerate(candidatos) if c[3] in ('8bit','16bit')]
     indices_sjis    = [i for i, c in enumerate(candidatos) if c[3] == 'shiftjis']
+    indices_eucjp   = [i for i, c in enumerate(candidatos) if c[3] == 'eucjp']
     traduzidos = [''] * len(candidatos)
 
-    # Detecta idioma da amostra de texto normal
     amostra_normal = ' '.join(candidatos[i][2] for i in indices_normais[:10])
     idioma_bin = detectar_idioma_texto(amostra_normal) if amostra_normal else 'en'
     dict_key_normal = get_dict_key(idioma_bin, _idioma_global)
-    dict_key_sjis   = get_dict_key('ja', _idioma_global)
-    print(f"📖 Binário: idioma detectado {idioma_bin} → dicionário: {dict_key_normal}", flush=True)
+    dict_key_jp     = get_dict_key('ja', _idioma_global)
+    print(f"📖 Binário: idioma {idioma_bin} → {dict_key_normal}", flush=True)
+
+    INSTRUCAO_BIN = (
+        "Estes são textos de um arquivo binário de jogo (diálogos, menus, itens). "
+        "REGRA CRÍTICA: cada tradução deve ter NO MÁXIMO o mesmo número de caracteres do original. "
+        "Evite acentos. Responda apenas com o texto traduzido."
+    )
+    INSTRUCAO_JP = (
+        "Textos japoneses de jogo (kanji/kana). "
+        "REGRA CRÍTICA: seja extremamente conciso — kanji ocupa 2 bytes, português ocupa mais. "
+        "Priorize a ideia central. Responda apenas com o texto traduzido."
+    )
 
     if indices_normais:
-        textos_normais = [candidatos[i][2] for i in indices_normais]
-        resultado_normais = traduzir_lista(
-            textos_normais,
-            "Estes são textos extraídos de um arquivo binário de jogo (diálogos, menus, itens, mensagens). "
-            "REGRA CRÍTICA: cada tradução deve ter NO MÁXIMO o mesmo número de caracteres do texto original, "
-            "nunca mais. Pode ser mais curta. Evite acentos quando possível, pois jogos antigos podem não "
-            "suportar esses caracteres. Responda apenas com o texto traduzido, sem comentários.",
-            dict_key=dict_key_normal
-        )
-        for i, trad in zip(indices_normais, resultado_normais):
-            traduzidos[i] = trad
+        res = traduzir_lista([candidatos[i][2] for i in indices_normais], INSTRUCAO_BIN, dict_key=dict_key_normal)
+        for i, t in zip(indices_normais, res): traduzidos[i] = t
 
     if indices_sjis:
-        textos_sjis = [candidatos[i][2] for i in indices_sjis]
-        resultado_sjis = traduzir_lista(
-            textos_sjis,
-            "Estes textos estão em japonês (kanji/kana), extraídos de um arquivo binário de jogo. "
-            "REGRA CRÍTICA: o espaço em bytes disponível para a tradução é MUITO menor que o normal, "
-            "pois kanji é extremamente compacto. Seja o mais conciso possível, use abreviações e "
-            "priorize a palavra/ideia central em vez da frase completa. Responda apenas com o texto "
-            "traduzido, sem comentários.",
-            dict_key=dict_key_sjis
-        )
-        for i, trad in zip(indices_sjis, resultado_sjis):
-            traduzidos[i] = trad
+        res = traduzir_lista([candidatos[i][2] for i in indices_sjis], INSTRUCAO_JP, dict_key=dict_key_jp)
+        for i, t in zip(indices_sjis, res): traduzidos[i] = t
+
+    if indices_eucjp:
+        res = traduzir_lista([candidatos[i][2] for i in indices_eucjp], INSTRUCAO_JP, dict_key=dict_key_jp)
+        for i, t in zip(indices_eucjp, res): traduzidos[i] = t
 
     for (start, end, original, modo), trad in zip(candidatos, traduzidos):
         max_len = end - start
         if modo == '8bit':
-            trad_bytes = trad.encode('ascii', errors='ignore')[:max_len]
-            trad_bytes += b' ' * (max_len - len(trad_bytes))
+            tb = trad.encode('ascii', errors='ignore')[:max_len]
+            tb += b' ' * (max_len - len(tb))
         elif modo == '16bit':
             num_chars = max_len // 2
-            trad_ascii = trad.encode('ascii', errors='ignore')[:num_chars]
-            trad_bytes = bytearray()
-            for ch in trad_ascii:
-                trad_bytes += bytes([ch, 0])
-            while len(trad_bytes) < max_len:
-                trad_bytes += b' \x00'
-            trad_bytes = bytes(trad_bytes)
+            tb = bytearray()
+            for ch in trad.encode('ascii', errors='ignore')[:num_chars]: tb += bytes([ch, 0])
+            while len(tb) < max_len: tb += b' \x00'
+            tb = bytes(tb)
+        elif modo == 'shiftjis':
+            tb = truncar_sjis(trad, max_len)
+        elif modo == 'eucjp':
+            tb = truncar_eucjp(trad, max_len)
         else:
-            trad_bytes = truncar_sjis(trad, max_len)
-        data[start:end] = trad_bytes
+            tb = trad.encode('ascii', errors='ignore')[:max_len]
+            tb += b' ' * (max_len - len(tb))
+        data[start:end] = tb
 
     ext_original = os.path.splitext(caminho)[1].lower() or '.bin'
     return bytes(data), ext_original
+
 
 def processar_iso(caminho):
     import pycdlib
@@ -1309,103 +1648,166 @@ def processar_imagem(caminho):
 # ─── FORMATOS NINTENDO ────────────────────────────────────────────────────────
 
 def processar_nds(caminho):
-    """
-    Processa ROMs de Nintendo DS (.nds).
-    Usa ndspy para extração estruturada do filesystem da ROM e reempacotamento.
-    Fallback automático para varredura binária se ndspy não estiver disponível.
-    """
+    """NDS com suporte a NARC, BMG, LZ10/LZ11 e varredura binária."""
     try:
         import ndspy.rom
-
-        print("Abrindo ROM de Nintendo DS com ndspy...", flush=True)
+        print("Abrindo ROM Nintendo DS com ndspy...", flush=True)
         rom = ndspy.rom.NintendoDSRom.fromFile(caminho)
 
-        # Mapeia índice de arquivo → nome dentro da ROM
         nome_por_indice = {}
         def _caminhar(fs, prefix=''):
             for nome, conteudo in fs.items():
-                if isinstance(conteudo, dict):
-                    _caminhar(conteudo, prefix + nome + '/')
-                else:
-                    nome_por_indice[conteudo] = prefix + nome
-        if rom.filenames:
-            _caminhar(rom.filenames)
+                if isinstance(conteudo, dict): _caminhar(conteudo, prefix+nome+'/')
+                else: nome_por_indice[conteudo] = prefix+nome
+        if rom.filenames: _caminhar(rom.filenames)
 
-        print(f"ROM aberta: {len(rom.files)} arquivo(s) no filesystem.", flush=True)
-
-        # Extensões internas que costumam conter texto em ROMs NDS
-        EXTS_TEXTO_NDS = {'', '.bin', '.dat', '.msg', '.txt', '.arc', '.narc', '.bmg', '.mtx'}
+        print(f"ROM: {len(rom.files)} arquivo(s) no filesystem.", flush=True)
+        EXTS_NDS = {'', '.bin', '.dat', '.msg', '.txt', '.arc', '.narc', '.bmg', '.mtx'}
+        dict_key = get_dict_key('ja', _idioma_global)
         traduzidos_count = 0
 
         for idx, dados in enumerate(rom.files):
-            if not dados or len(dados) < 8:
-                continue
+            if not dados or len(dados) < 8: continue
             nome = nome_por_indice.get(idx, f'file_{idx:04d}.bin')
-            ext = os.path.splitext(nome)[1].lower()
-            if ext not in EXTS_TEXTO_NDS:
+            ext  = os.path.splitext(nome)[1].lower()
+            if ext not in EXTS_NDS: continue
+
+            # Tenta descomprimir LZ
+            descomp = tentar_descomprimir_nintendo(bytes(dados))
+            dw = descomp if descomp and len(descomp) > 8 else bytes(dados)
+
+            # Tenta NARC
+            narc_files = parsear_narc(dw)
+            if narc_files:
+                novos, mod = list(narc_files), False
+                for j, arq in enumerate(narc_files):
+                    if not arq or len(arq) < 4: continue
+                    bmg = parsear_bmg(arq)
+                    if bmg:
+                        strings, _ = bmg
+                        sf = [s for s in strings if s.strip() and len(s) > 1]
+                        if sf:
+                            trad = traduzir_lista(sf, "Texto Nintendo DS. Conciso.", dict_key=dict_key)
+                            mapa = {o:t for o,t in zip(sf,trad)}
+                            novos[j] = remontar_bmg(arq, [mapa.get(s,s) for s in strings])
+                            mod = True
+                    else:
+                        tmp = tempfile.mktemp(suffix='.bin')
+                        with open(tmp,'wb') as f: f.write(arq)
+                        try:
+                            novo, _ = processar_binario(tmp)
+                            if novo != arq: novos[j] = novo; mod = True
+                        except Exception: pass
+                        finally:
+                            if os.path.exists(tmp): os.remove(tmp)
+                if mod:
+                    rom.files[idx] = remontar_narc(dw, novos)
+                    traduzidos_count += 1
+                    print(f"NARC traduzido: {nome}", flush=True)
                 continue
 
-            temp = tempfile.mktemp(suffix=ext or '.bin')
-            with open(temp, 'wb') as f:
-                f.write(dados)
-            try:
-                novo, _ = processar_binario(temp)
-                if novo != dados:
-                    rom.files[idx] = novo
+            # Tenta BMG direto
+            bmg = parsear_bmg(dw)
+            if bmg:
+                strings, _ = bmg
+                sf = [s for s in strings if s.strip() and len(s) > 1]
+                if sf:
+                    trad = traduzir_lista(sf, "Texto Nintendo DS. Conciso.", dict_key=dict_key)
+                    mapa = {o:t for o,t in zip(sf,trad)}
+                    rom.files[idx] = remontar_bmg(dw, [mapa.get(s,s) for s in strings])
                     traduzidos_count += 1
-                    print(f"Traduzido: {nome}", flush=True)
-            except Exception:
-                pass
-            finally:
-                if os.path.exists(temp):
-                    os.remove(temp)
+                    print(f"BMG traduzido: {nome}", flush=True)
+                continue
 
-        print(f"Total: {traduzidos_count} arquivo(s) traduzido(s) na ROM NDS.", flush=True)
+            # Fallback binário
+            tmp = tempfile.mktemp(suffix=ext or '.bin')
+            with open(tmp,'wb') as f: f.write(dw)
+            try:
+                novo, _ = processar_binario(tmp)
+                if novo != dw:
+                    rom.files[idx] = novo; traduzidos_count += 1
+                    print(f"Binário traduzido: {nome}", flush=True)
+            except Exception: pass
+            finally:
+                if os.path.exists(tmp): os.remove(tmp)
+
+        print(f"Total NDS: {traduzidos_count} arquivo(s) traduzido(s).", flush=True)
         return bytes(rom.save()), '.nds'
 
     except ImportError:
-        print("ndspy não instalado. Usando varredura binária...", flush=True)
-        print("Dica: instale com 'pip install ndspy' para melhor suporte a ROMs NDS.", flush=True)
+        print("ndspy não instalado. Varredura binária...", flush=True)
         return processar_binario(caminho)
     except Exception as e:
-        print(f"Erro com ndspy ({e}). Usando varredura binária...", flush=True)
+        print(f"Erro ndspy ({e}). Varredura binária...", flush=True)
         return processar_binario(caminho)
+
+
+def _processar_nintendo_sarc_scan(caminho: str, ext_saida: str) -> tuple:
+    """Varredura de SARC/MSBT dentro de ROMs 3DS/Switch."""
+    with open(caminho, 'rb') as f:
+        data = f.read()
+
+    dict_key = get_dict_key('ja', _idioma_global)
+    result   = bytearray(data)
+    count    = 0
+    pos      = 0
+
+    while pos < len(data) - 4:
+        if data[pos:pos+4] == b'SARC':
+            try:
+                little    = data[pos+6:pos+8] == b'\xFF\xFE'
+                bo        = 'little' if little else 'big'
+                sarc_size = int.from_bytes(data[pos+8:pos+12], bo)
+                if 0 < sarc_size <= len(data) - pos:
+                    sarc_data = data[pos:pos+sarc_size]
+                    arquivos  = parsear_sarc(sarc_data)
+                    if arquivos:
+                        mod, arqs_novos = False, dict(arquivos)
+                        for nome, conteudo in arquivos.items():
+                            strings = parsear_msbt(conteudo)
+                            if strings:
+                                sf = [s for s in strings if s.strip() and len(s) > 1]
+                                if sf:
+                                    trad = traduzir_lista(sf, "Texto Nintendo. Conciso.", dict_key=dict_key)
+                                    arqs_novos[nome] = remontar_msbt(conteudo, trad)
+                                    mod = True; count += 1
+                                    print(f"MSBT traduzido: {nome}", flush=True)
+                        if mod:
+                            novo_sarc = remontar_sarc(sarc_data, arqs_novos)
+                            result[pos:pos+len(novo_sarc)] = novo_sarc
+                        pos += sarc_size; continue
+            except Exception: pass
+        pos += 1
+        if pos % 50_000_000 == 0:
+            print(f"Varrendo: {pos//1_000_000}MB...", flush=True)
+
+    if count > 0:
+        print(f"Total: {count} MSBT(s) traduzido(s).", flush=True)
+        return bytes(result), ext_saida
+
+    print("Nenhum SARC/MSBT encontrado. Varredura binária...", flush=True)
+    return processar_binario(caminho)
 
 
 def processar_3ds(caminho):
-    """
-    Processa ROMs de Nintendo 3DS (.3ds).
-    ROMs de varejo são criptografadas — para melhores resultados use ROMs
-    descriptografadas (ex: geradas pelo GodMode9 no próprio console).
-    """
-    print("Processando ROM de Nintendo 3DS...", flush=True)
-    print("⚠️ ROMs de varejo são criptografadas. Para melhores resultados,", flush=True)
-    print("   use uma ROM descriptografada gerada pelo GodMode9.", flush=True)
-    return processar_binario(caminho)
+    """3DS: busca SARC/MSBT (ROMs descriptografadas) + fallback binário."""
+    print("Processando Nintendo 3DS...", flush=True)
+    print("ℹ️ Para melhor resultado, use ROM descriptografada (GodMode9).", flush=True)
+    return _processar_nintendo_sarc_scan(caminho, '.3ds')
 
 
 def processar_nsp(caminho):
-    """
-    Processa pacotes Nintendo Switch (.nsp).
-    NSPs são fortemente criptografados — varredura binária terá resultados
-    limitados sem descriptografia prévia com as chaves do console (prod.keys).
-    """
+    """NSP: busca SARC/MSBT (descriptografado) + fallback binário."""
     print("Processando NSP (Nintendo Switch Package)...", flush=True)
-    print("⚠️ NSPs são criptografados. Sem descriptografia prévia (prod.keys),", flush=True)
-    print("   os resultados serão muito limitados.", flush=True)
-    return processar_binario(caminho)
+    print("ℹ️ Para melhor resultado, use NSP descriptografado (prod.keys).", flush=True)
+    return _processar_nintendo_sarc_scan(caminho, '.nsp')
 
 
 def processar_xci(caminho):
-    """
-    Processa cartuchos Nintendo Switch (.xci).
-    Mesmo comportamento do NSP — requer descriptografia para resultados completos.
-    """
+    """XCI: busca SARC/MSBT (descriptografado) + fallback binário."""
     print("Processando XCI (Nintendo Switch Game Card)...", flush=True)
-    print("⚠️ XCIs são criptografados. Sem descriptografia prévia (prod.keys),", flush=True)
-    print("   os resultados serão muito limitados.", flush=True)
-    return processar_binario(caminho)
-
+    print("ℹ️ Para melhor resultado, use XCI descriptografado (prod.keys).", flush=True)
+    return _processar_nintendo_sarc_scan(caminho, '.xci')
 # ─── MAPA DE EXTENSÕES ────────────────────────────────────────────────────────
 
 EXTENSOES = {
