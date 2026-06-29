@@ -1,0 +1,30 @@
+@"
+# Python
+__pycache__/
+*.pyc
+*.pyo
+python_build/
+python_dist/
+campfire_cache.db
+campfire_qr.png
+
+# Env
+.env
+
+# Node / Electron
+node_modules/
+dist/
+campfire-mobile/node_modules/
+campfire-mobile/.expo/
+campfire-mobile/dist/
+
+# Arquivos de teste
+teste.txt
+teste_chave.py
+teste_dicionario.py
+resultado.txt
+
+# OS
+.DS_Store
+Thumbs.db
+"@ | Out-File -FilePath ".gitignore" -Encoding utf8

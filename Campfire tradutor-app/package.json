@@ -1,0 +1,58 @@
+{
+  "name": "campfire-tradutor-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "electron": "electron .",
+    "start": "concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
+    "build:python": "python -m PyInstaller tradutor.spec --distpath python_dist --workpath python_build --noconfirm",
+    "build:vite": "vite build",
+    "build:electron": "electron-builder",
+    "build": "npm run build:python && npm run build:vite && npm run build:electron"
+  },
+  "build": {
+    "appId": "com.campfire.tradutor",
+    "productName": "Campfire Tradutor",
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "python_dist/tradutor",
+        "to": "python_dist/tradutor",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "concurrently": "^10.0.3",
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^8.0.16",
+    "wait-on": "^9.0.10"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
+}
