@@ -1,9 +1,14 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const crypto = require('crypto')
 const { execSync, spawn } = require('child_process')
 
-const CONFIG_PATH = path.join(app.getPath('userData'), 'campfire_config.json')
+const CONFIG_PATH    = path.join(app.getPath('userData'), 'campfire_config.json')
+const PROGRESS_DIR   = path.join(app.getPath('userData'), 'progress')
+
+// Garante que a pasta de progresso existe
+if (!fs.existsSync(PROGRESS_DIR)) fs.mkdirSync(PROGRESS_DIR, { recursive: true })
 
 function lerConfig() {
   try {
@@ -14,6 +19,15 @@ function lerConfig() {
 
 function salvarConfig(dados) {
   try { fs.writeFileSync(CONFIG_PATH, JSON.stringify(dados, null, 2)) } catch {}
+}
+
+// Gera um ID único pro arquivo baseado no caminho + idioma
+function progressId(caminho, idioma) {
+  return crypto.createHash('md5').update(`${caminho}||${idioma}`).digest('hex')
+}
+
+function progressPath(caminho, idioma) {
+  return path.join(PROGRESS_DIR, `${progressId(caminho, idioma)}.json`)
 }
 
 function createWindow() {
@@ -50,14 +64,10 @@ ipcMain.handle('save-api-key', (_, key) => {
 
 ipcMain.handle('open-url', (_, url) => shell.openExternal(url))
 
-// Recebe as extensões do modo selecionado no frontend (ex: ['.png', '.jpg'])
-// e usa no filtro do diálogo — sem isso imagens e Nintendo nunca apareciam
 ipcMain.handle('select-file', async (_, exts) => {
-  // Remove o ponto das extensões pois o Electron não usa ponto no filtro
   const extsSemPonto = exts && exts.length > 0
     ? exts.map(e => e.replace('.', ''))
     : [
-        // Fallback com todas as extensões suportadas caso nenhuma seja passada
         'txt','srt','json','xml','csv','mkv','mp4','pdf','mp3','epub',
         'bin','dat','iso','zip','rar',
         'nds','3ds','nsp','xci',
@@ -84,8 +94,11 @@ ipcMain.handle('select-folder', async () => {
 
 ipcMain.handle('traduzir', (event, caminho, idioma) => {
   const apiKey = lerConfig().apiKey || ''
+  const pPath  = progressPath(caminho, idioma)
+
   return new Promise((resolve, reject) => {
     let processo
+    let saidaCompleta = ''
 
     if (app.isPackaged) {
       const exePath = path.join(process.resourcesPath, 'python_dist', 'tradutor', 'tradutor.exe')
@@ -95,9 +108,48 @@ ipcMain.handle('traduzir', (event, caminho, idioma) => {
       processo = spawn('python', [scriptPath, caminho, idioma, apiKey])
     }
 
-    processo.stdout.on('data', (data) => event.sender.send('progresso', data.toString()))
-    processo.stderr.on('data', (data) => event.sender.send('progresso', `AVISO: ${data.toString()}`))
-    processo.on('close', (code) => code === 0 ? resolve('ok') : reject('Erro na tradução'))
+    processo.stdout.on('data', (data) => {
+      const msg = data.toString()
+      saidaCompleta += msg
+      event.sender.send('progresso', msg)
+
+      // ── Salva progresso a cada batch/parte concluída ───────────────────────
+      const matchBatch = msg.match(/Batch\s+(\d+)\/(\d+)/)
+      const matchParte = msg.match(/Parte\s+(\d+)\/(\d+)/)
+      const match = matchBatch || matchParte
+
+      if (match) {
+        const atual = parseInt(match[1])
+        const total = parseInt(match[2])
+        const tipo  = matchBatch ? 'batch' : 'parte'
+        try {
+          fs.writeFileSync(pPath, JSON.stringify({
+            caminho,
+            idioma,
+            tipo,
+            atual,
+            total,
+            pct: Math.round((atual / total) * 100),
+            atualizado: new Date().toISOString(),
+          }, null, 2))
+        } catch {}
+      }
+    })
+
+    processo.stderr.on('data', (data) => {
+      event.sender.send('progresso', `AVISO: ${data.toString()}`)
+    })
+
+    processo.on('close', (code) => {
+      if (code === 0) {
+        // ── Limpa progresso quando concluído com sucesso ───────────────────
+        try { if (fs.existsSync(pPath)) fs.unlinkSync(pPath) } catch {}
+        resolve('ok')
+      } else {
+        // ── Mantém progresso salvo pra retomar depois ──────────────────────
+        reject('Erro na tradução')
+      }
+    })
   })
 })
 
@@ -109,6 +161,25 @@ ipcMain.handle('check-file-info', async (_, caminho) => {
   } catch {
     return { size: 0, ext: '' }
   }
+})
+
+// ── Handlers de progresso ──────────────────────────────────────────────────
+ipcMain.handle('check-progress', async (_, caminho, idioma) => {
+  try {
+    const pPath = progressPath(caminho, idioma)
+    if (fs.existsSync(pPath)) {
+      return JSON.parse(fs.readFileSync(pPath, 'utf-8'))
+    }
+  } catch {}
+  return null
+})
+
+ipcMain.handle('clear-progress', async (_, caminho, idioma) => {
+  try {
+    const pPath = progressPath(caminho, idioma)
+    if (fs.existsSync(pPath)) fs.unlinkSync(pPath)
+  } catch {}
+  return true
 })
 
 app.whenReady().then(createWindow)
