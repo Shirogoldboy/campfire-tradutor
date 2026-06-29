@@ -1,0 +1,69 @@
+name: 📦 Backup Automático do App
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 4 * * *'  # Todo dia às 4h da manhã
+  workflow_dispatch:       # Permite rodar manualmente
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Gerar resumo do backup
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          mkdir -p backups
+
+          python3 - <<'EOF'
+          import os
+          import json
+          from datetime import date
+
+          def contar_arquivos(pasta, exts=None):
+              total = 0
+              for root, dirs, files in os.walk(pasta):
+                  dirs[:] = [d for d in dirs if d not in ['node_modules', '__pycache__', '.git', 'dist', 'python_dist', 'python_build']]
+                  for f in files:
+                      if exts is None or any(f.endswith(e) for e in exts):
+                          total += 1
+              return total
+
+          resumo = {
+              "data": str(date.today()),
+              "arquivos": {
+                  "python": contar_arquivos("Campfire tradutor-app", [".py"]),
+                  "javascript_react": contar_arquivos("Campfire tradutor-app", [".js", ".jsx"]),
+                  "mobile": contar_arquivos("campfire-mobile", [".js", ".jsx", ".json"]),
+                  "total": contar_arquivos(".")
+              },
+              "modulos": {
+                  "desktop": "Electron + React + Vite + Python",
+                  "mobile": "Expo + React Native",
+                  "motor": "Claude Haiku + MyMemory + LibreTranslate + Tesseract",
+                  "formatos_nintendo": ["NARC", "BMG", "MSBT", "SARC", "LZ10", "LZ11"],
+                  "encodings": ["ASCII 8bit", "Wide-char 16bit", "ShiftJIS", "EUC-JP"]
+              }
+          }
+
+          nome = f"backups/backup_{date.today()}.json"
+          with open(nome, "w", encoding="utf-8") as f:
+              json.dump(resumo, f, ensure_ascii=False, indent=2)
+
+          print(f"✅ Backup gerado: {nome}")
+          print(f"   Python: {resumo['arquivos']['python']} arquivos")
+          print(f"   JS/React: {resumo['arquivos']['javascript_react']} arquivos")
+          print(f"   Mobile: {resumo['arquivos']['mobile']} arquivos")
+          EOF
+
+      - name: Commit e push do backup
+        run: |
+          git config user.name "Campfire Bot"
+          git config user.email "campfire-bot@noreply.github.com"
+          git add backups/
+          git diff --cached --quiet || git commit -m "📦 Backup automático $(date +%Y-%m-%d)"
+          git push
