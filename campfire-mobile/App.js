@@ -27,20 +27,17 @@ const IDIOMAS = [
 ]
 
 const MYMEMORY_CODES = {
-  'português brasileiro coloquial': 'pt-BR',
-  'português europeu': 'pt-PT',
-  'english': 'en', 'español': 'es', 'français': 'fr',
-  'deutsch': 'de', 'italiano': 'it', 'japonês': 'ja',
-  'coreano': 'ko', 'chinês simplificado': 'zh-CN',
-  'russo': 'ru', 'árabe': 'ar',
+  'português brasileiro coloquial': 'pt-BR', 'português europeu': 'pt-PT',
+  'english': 'en', 'español': 'es', 'français': 'fr', 'deutsch': 'de',
+  'italiano': 'it', 'japonês': 'ja', 'coreano': 'ko',
+  'chinês simplificado': 'zh-CN', 'russo': 'ru', 'árabe': 'ar',
 }
 
 const LIBRETRANSLATE_CODES = {
   'português brasileiro coloquial': 'pt', 'português europeu': 'pt',
-  'english': 'en', 'español': 'es', 'français': 'fr',
-  'deutsch': 'de', 'italiano': 'it', 'japonês': 'ja',
-  'coreano': 'ko', 'chinês simplificado': 'zh',
-  'russo': 'ru', 'árabe': 'ar',
+  'english': 'en', 'español': 'es', 'français': 'fr', 'deutsch': 'de',
+  'italiano': 'it', 'japonês': 'ja', 'coreano': 'ko',
+  'chinês simplificado': 'zh', 'russo': 'ru', 'árabe': 'ar',
 }
 
 const MODOS = [
@@ -53,8 +50,8 @@ const MODOS = [
   {
     id: 'pdf', icone: '📕', label: 'PDF',
     desc: '.pdf', exts: ['pdf'],
-    tipo: 'servidor', badge: '🖥️ PC', badgeColor: '#2a4a7a',
-    aviso: 'Requer servidor rodando no PC.',
+    tipo: 'pdf_direto', badge: '✨ DIRETO', badgeColor: '#2a7a2a',
+    aviso: null,
   },
   {
     id: 'imagem', icone: '🖼️', label: 'Imagem / Painel',
@@ -217,13 +214,66 @@ async function processarJSON(conteudo, idioma, apiKey, setLog) {
   return JSON.stringify(await traduzirObj(dados), null, 2)
 }
 
+async function processarPDF(arquivo, idioma, apiKey, setLog) {
+  setLog?.('Lendo PDF...')
+
+  // ── Carrega pdfjs-dist ────────────────────────────────────────────────────
+  let pdfjsLib
+  try {
+    pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js')
+    pdfjsLib.GlobalWorkerOptions.workerSrc = false
+  } catch (e) {
+    throw { tipo: 'CLAUDE_NECESSARIO', motivo: 'Não foi possível carregar o leitor de PDF. Tente com um servidor.' }
+  }
+
+  // ── Lê o arquivo como base64 e converte para ArrayBuffer ─────────────────
+  const base64 = await FileSystem.readAsStringAsync(arquivo.uri, {
+    encoding: FileSystem.EncodingType.Base64
+  })
+  const binary = atob(base64)
+  const bytes  = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+
+  // ── Extrai texto de cada página ───────────────────────────────────────────
+  const pdf    = await pdfjsLib.getDocument({ data: bytes }).promise
+  const paginas = []
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    setLog?.(`Extraindo página ${i}/${pdf.numPages}...`)
+    const page    = await pdf.getPage(i)
+    const content = await page.getTextContent()
+    const texto   = content.items.map(item => item.str).join(' ').trim()
+    if (texto) paginas.push(texto)
+  }
+
+  // ── PDF escaneado — sem texto extraível ───────────────────────────────────
+  if (paginas.length === 0) {
+    throw {
+      tipo: 'CLAUDE_NECESSARIO',
+      motivo: 'Este PDF é escaneado (imagem) e não contém texto selecionável. Para traduzir PDFs escaneados, adicione sua chave Anthropic nas configurações.'
+    }
+  }
+
+  // ── Traduz página por página ──────────────────────────────────────────────
+  const traduzidas = []
+  for (let i = 0; i < paginas.length; i++) {
+    setLog?.(`Traduzindo página ${i + 1}/${paginas.length}...`)
+    const trad = await traduzirSegmento(paginas[i], idioma, apiKey, setLog)
+    traduzidas.push(`=== Página ${i + 1} ===\n${trad}`)
+  }
+
+  return traduzidas.join('\n\n')
+}
+
 async function processarImagem(arquivo, idioma, apiKey) {
   if (!apiKey) throw { tipo: 'CLAUDE_NECESSARIO', motivo: 'Tradução de imagens requer a chave Anthropic (Claude Vision).' }
 
   const TIPOS_MIME = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
-  const ext = arquivo.name.split('.').pop().toLowerCase()
+  const ext  = arquivo.name.split('.').pop().toLowerCase()
   const mime = TIPOS_MIME[ext] || 'image/jpeg'
-  const base64 = await FileSystem.readAsBase64Async(arquivo.uri)
+  const base64 = await FileSystem.readAsStringAsync(arquivo.uri, {
+    encoding: FileSystem.EncodingType.Base64
+  })
 
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -252,19 +302,19 @@ async function processarImagem(arquivo, idioma, apiKey) {
 // ─── App principal ────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [tela, setTela] = useState('modos')
-  const [serverIp, setServerIp] = useState('')
-  const [apiKey, setApiKey] = useState('')
-  const [modo, setModo] = useState(null)
-  const [arquivo, setArquivo] = useState(null)
-  const [idioma, setIdioma] = useState(IDIOMAS[0].value)
-  const [idiomaLabel, setIdiomaLabel] = useState(IDIOMAS[0].label)
+  const [tela, setTela]                     = useState('modos')
+  const [serverIp, setServerIp]             = useState('')
+  const [apiKey, setApiKey]                 = useState('')
+  const [modo, setModo]                     = useState(null)
+  const [arquivo, setArquivo]               = useState(null)
+  const [idioma, setIdioma]                 = useState(IDIOMAS[0].value)
+  const [idiomaLabel, setIdiomaLabel]       = useState(IDIOMAS[0].label)
   const [mostrarIdiomas, setMostrarIdiomas] = useState(false)
-  const [status, setStatus] = useState('idle')
-  const [log, setLog] = useState('')
+  const [status, setStatus]                 = useState('idle')
+  const [log, setLog]                       = useState('')
   const [onboardingMotivo, setOnboardingMotivo] = useState('')
-  const [mostrarQR, setMostrarQR] = useState(false)
-  const [qrEscaneado, setQrEscaneado] = useState(false)
+  const [mostrarQR, setMostrarQR]           = useState(false)
+  const [qrEscaneado, setQrEscaneado]       = useState(false)
   const [qrPermission, requestQrPermission] = useCameraPermissions()
 
   useEffect(() => {
@@ -313,7 +363,7 @@ export default function App() {
     try {
       const ext = arquivo.name.split('.').pop().toLowerCase()
 
-      // ── Modo DIRETO ────────────────────────────────────────────────────────
+      // ── Modo DIRETO (texto) ────────────────────────────────────────────────
       if (modo.tipo === 'direto') {
         let resultado = ''
         if (ext === 'txt') {
@@ -326,12 +376,23 @@ export default function App() {
           const c = await FileSystem.readAsStringAsync(arquivo.uri)
           resultado = await processarJSON(c, idioma, apiKey, setLog)
         } else {
-          // xml, csv — como texto simples
           const c = await FileSystem.readAsStringAsync(arquivo.uri)
           resultado = await processarTXT(c, idioma, apiKey, setLog)
         }
         const nomeSaida = arquivo.name.replace(/\.[^.]+$/, `_traduzido.${ext}`)
-        const caminho = FileSystem.documentDirectory + nomeSaida
+        const caminho   = FileSystem.documentDirectory + nomeSaida
+        await FileSystem.writeAsStringAsync(caminho, resultado, { encoding: FileSystem.EncodingType.UTF8 })
+        setStatus('concluido')
+        setLog('✅ Tradução concluída!')
+        await Sharing.shareAsync(caminho)
+        return
+      }
+
+      // ── Modo PDF DIRETO ────────────────────────────────────────────────────
+      if (modo.tipo === 'pdf_direto') {
+        const resultado = await processarPDF(arquivo, idioma, apiKey, setLog)
+        const nomeSaida = arquivo.name.replace(/\.[^.]+$/, '_traduzido.txt')
+        const caminho   = FileSystem.documentDirectory + nomeSaida
         await FileSystem.writeAsStringAsync(caminho, resultado, { encoding: FileSystem.EncodingType.UTF8 })
         setStatus('concluido')
         setLog('✅ Tradução concluída!')
@@ -343,7 +404,7 @@ export default function App() {
       if (modo.tipo === 'claude_direto') {
         const resultado = await processarImagem(arquivo, idioma, apiKey)
         const nomeSaida = arquivo.name.replace(/\.[^.]+$/, '_traducao.txt')
-        const caminho = FileSystem.documentDirectory + nomeSaida
+        const caminho   = FileSystem.documentDirectory + nomeSaida
         await FileSystem.writeAsStringAsync(caminho, resultado, { encoding: FileSystem.EncodingType.UTF8 })
         setStatus('concluido')
         setLog('✅ Tradução concluída!')
@@ -384,7 +445,7 @@ export default function App() {
 
       const blob = await res.blob()
       const nomeSaida = arquivo.name.replace(/\.[^.]+$/, '') + '_traduzido.' + arquivo.name.split('.').pop()
-      const caminho = FileSystem.documentDirectory + nomeSaida
+      const caminho   = FileSystem.documentDirectory + nomeSaida
 
       const reader = new FileReader()
       reader.onload = async () => {
@@ -416,7 +477,7 @@ export default function App() {
 
       <View style={s.card}>
         <Text style={s.label}>🖥️ IP do Servidor (opcional)</Text>
-        <Text style={s.hint}>Necessário para PDF, áudio e arquivos compactados.</Text>
+        <Text style={s.hint}>Necessário apenas para áudio/vídeo e arquivos compactados.</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TextInput
             style={[s.input, { flex: 1 }]}
@@ -458,7 +519,6 @@ export default function App() {
         <Text style={{ color: '#555', fontSize: 13, textAlign: 'center' }}>Pular por agora</Text>
       </TouchableOpacity>
 
-      {/* QR Scanner Modal */}
       <Modal visible={mostrarQR} animationType="slide">
         <View style={{ flex: 1, backgroundColor: '#000' }}>
           <CameraView
@@ -485,7 +545,6 @@ export default function App() {
 
       <View style={s.card}>
         <Text style={[s.label, { color: '#fff', marginBottom: 14 }]}>Como obter sua chave gratuita:</Text>
-
         {[
           { n: '1', titulo: 'Criar conta gratuita', desc: 'Acesse console.anthropic.com e crie sua conta.' },
           { n: '2', titulo: 'Adicionar créditos (mínimo U$5)', desc: 'Vá em Billing → Add Credits. Equivale a ~R$26 e dura bastante.' },
