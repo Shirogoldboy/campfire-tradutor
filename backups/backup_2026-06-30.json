@@ -1,0 +1,28 @@
+{
+  "data": "2026-06-30",
+  "arquivos": {
+    "python": 3,
+    "javascript_react": 8,
+    "mobile": 7,
+    "total": 46
+  },
+  "modulos": {
+    "desktop": "Electron + React + Vite + Python",
+    "mobile": "Expo + React Native",
+    "motor": "Claude Haiku + MyMemory + LibreTranslate + Tesseract",
+    "formatos_nintendo": [
+      "NARC",
+      "BMG",
+      "MSBT",
+      "SARC",
+      "LZ10",
+      "LZ11"
+    ],
+    "encodings": [
+      "ASCII 8bit",
+      "Wide-char 16bit",
+      "ShiftJIS",
+      "EUC-JP"
+    ]
+  }
+}
