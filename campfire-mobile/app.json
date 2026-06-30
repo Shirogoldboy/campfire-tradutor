@@ -17,16 +17,17 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-  "expo-sharing",
-  [
-    "expo-build-properties",
-    {
-      "android": {
-        "usesCleartextTraffic": true
-      }
-    }
-  ]
-],
+      "expo-sharing",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "expo-speech-recognition"
+    ],
     "extra": {
       "eas": {
         "projectId": "cc0deaa2-522b-47ff-bcd3-9e08af658539"
