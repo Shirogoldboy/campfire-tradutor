@@ -65,9 +65,13 @@ contenha, incidentalmente, informação desse tipo — ver a [Política de Priva
 
 ## 6. Propriedade Intelectual
 
-O código-fonte do Campfire Tradutor está disponível em [licença do repositório — CONFIRMAR,
-ex: MIT/GPL] no GitHub. O dicionário colaborativo é público e de código aberto. Marcas, nome e
-identidade visual do Campfire Tradutor pertencem ao Desenvolvedor. Ver também o
+O código-fonte do Campfire Tradutor está disponível sob **licença MIT** no GitHub
+(github.com/Shirogoldboy/campfire-tradutor). O repositório do dicionário colaborativo
+(github.com/Shirogoldboy/campfire-dictionary) é público, mas **ainda não possui uma licença de
+código aberto formalmente atribuída** [CONFIRMAR: recomenda-se adicionar uma licença — ex: MIT ou
+CC0 — a esse repositório antes de publicar esta política, já que sem uma licença explícita o
+conteúdo não pode, tecnicamente, ser livremente reutilizado por terceiros mesmo sendo público].
+Marcas, nome e identidade visual do Campfire Tradutor pertencem ao Desenvolvedor. Ver também o
 [Aviso de Direitos Autorais](aviso_direitos_autorais.md) para notificações de violação de
 direitos autorais.
 

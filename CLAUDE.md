@@ -157,7 +157,9 @@ Ordem sugerida pelo parecer jurídico de 2026-07-16:
 - [x] Política de Privacidade — `Políticas/politica_de_privacidade.md` + `docs/politica-de-privacidade.md`
 - [x] Política do Dicionário Colaborativo — `Políticas/politica_do_dicionario.md` + `docs/politica-do-dicionario.md`
 - [x] Aviso de Direitos Autorais — `Políticas/aviso_direitos_autorais.md` + `docs/aviso-direitos-autorais.md`
-- [ ] Revisão final do advogado + preencher campos pendentes: sobrenome completo do Caio, cidade/comarca (foro), licença do repositório (ex: MIT/GPL/CC0), data de vigência
+- [x] Licença do repositório do app — MIT, adicionado em 2026-07-16 (`LICENSE` na raiz)
+- [ ] Adicionar licença ao repositório do dicionário (campfire-dictionary) — hoje é público mas sem LICENSE, então tecnicamente não é reutilizável por terceiros apesar do README dizer "open source". Recomendado: CC0 ou MIT.
+- [ ] Revisão final do advogado + preencher campos pendentes: sobrenome completo do Caio, cidade/comarca (foro), data de vigência
 - [ ] Publicar via GitHub Pages (`docs/` já preparado — falta habilitar Settings → Pages e confirmar antes de ir ao ar)
 
 **Fase 2 — Propriedade intelectual**
