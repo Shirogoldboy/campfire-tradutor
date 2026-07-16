@@ -42,10 +42,9 @@ Tudo que é contribuído ao dicionário:
   e-mails, chaves de API ou outros dados que identifiquem o usuário que gerou a contribuição, mas
   como o conteúdo de origem é escolhido pelo próprio usuário, não é possível garantir de forma
   absoluta que nenhum segmento contenha, incidentalmente, algo desse tipo;
-- [CONFIRMAR: o repositório do dicionário ainda não tem uma licença de código aberto atribuída —
-  recomenda-se adicionar uma (ex: CC0 para máxima reutilização, ou MIT) antes de publicar esta
-  política, já que sem isso o conteúdo não pode ser tecnicamente reutilizado por terceiros com
-  segurança jurídica, apesar do repositório ser público.]
+- Pode ser usado, consultado, copiado ou redistribuído por qualquer pessoa, sem restrições, sob a
+  licença **CC0 1.0 Universal** (domínio público) do repositório
+  github.com/Shirogoldboy/campfire-dictionary.
 
 ## 4. Conteúdo protegido por direitos autorais
 
