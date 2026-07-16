@@ -4,7 +4,7 @@ title: Aviso de Direitos Autorais — Campfire Tradutor
 
 # Aviso de Direitos Autorais — Campfire Tradutor
 
-**Versão:** v0.1 — Rascunho · **Data:** [DATA]
+**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
 
 ## 1. Respeito à propriedade intelectual
 
@@ -37,6 +37,11 @@ configure violação, envie uma notificação para **caiofabianodbz2@gmail.com**
    direitos, por seu representante legal ou pela lei;
 5. Uma declaração de que as informações fornecidas na notificação são precisas.
 
+Alternativamente, por o repositório estar hospedado no GitHub (empresa americana), você também
+pode utilizar o processo próprio de notificação DMCA do GitHub
+(github.com/contact/dmca), que segue regras e prazos próprios daquela plataforma, independentes
+deste Aviso.
+
 ## 4. O que fazemos após uma notificação
 
 Notificações que contenham as informações acima serão analisadas e, quando procedentes, o
@@ -59,10 +64,17 @@ direitos autorais no dicionário colaborativo.
 ## 7. Marcas e identidade visual
 
 O nome "Campfire Tradutor", seus logotipos e identidade visual são de titularidade do
-Desenvolvedor. Uso não autorizado dessas marcas para fins comerciais ou que possa causar confusão
-sobre a origem do Aplicativo não é permitido. [Atualizar após conclusão do registro da marca no
-INPI, incluindo o número do processo/registro quando disponível.]
+Desenvolvedor, inclusive frente a versões modificadas do código-fonte aberto (forks) — ver
+[EULA](eula.md), Seção 7. Uso não autorizado dessas marcas para fins comerciais ou que possa causar
+confusão sobre a origem do Aplicativo não é permitido. [Atualizar após conclusão do registro da
+marca no INPI, incluindo o número do processo/registro quando disponível.]
 
-## 8. Contato
+## 8. Lei Aplicável
+
+Este Aviso é regido pelas leis da República Federativa do Brasil, em especial a Lei nº 9.610/1998,
+sem prejuízo de mecanismos análogos de outras jurisdições aplicáveis à infraestrutura utilizada
+(ex: o processo DMCA do GitHub, mencionado na Seção 3).
+
+## 9. Contato
 
 Dúvidas ou notificações relacionadas a direitos autorais: caiofabianodbz2@gmail.com

@@ -4,11 +4,12 @@ title: Política de Privacidade — Campfire Tradutor
 
 # Política de Privacidade — Campfire Tradutor
 
-**Versão:** v0.1 — Rascunho · **Data:** [DATA]
+**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio [SOBRENOME — CONFIRMAR], pessoa física ("nós"), trata dados ao ser usado nas versões desktop
-(Windows) e mobile (Android).
+(Windows) e mobile (Android). Esta Política trata especificamente de dados; o uso do serviço em
+si é regido pelos [Termos de Uso](termos-de-uso.md) e a licença do software pelo [EULA](eula.md).
 
 Levamos privacidade a sério: o Aplicativo **não exige criação de conta**, **não coleta dados
 pessoais para fins de marketing** e **processa a maior parte do conteúdo localmente**, no seu
@@ -46,7 +47,8 @@ fim.
 ### 1.3 Contribuições ao dicionário colaborativo
 Pares de texto original → tradução, gerados durante o uso do Aplicativo, podem ser enviados de
 forma assíncrona (em segundo plano) para um repositório público no GitHub
-(github.com/Shirogoldboy/campfire-dictionary), de forma a beneficiar outros usuários.
+(github.com/Shirogoldboy/campfire-dictionary), de forma a beneficiar outros usuários — ver também
+a [Política do Dicionário](politica-do-dicionario.md).
 
 O Aplicativo foi projetado para que o dicionário colaborativo contenha apenas pares de tradução
 destinados ao aprimoramento do sistema. São adotadas medidas para evitar a inclusão de informações
@@ -59,7 +61,8 @@ um nome próprio dentro de uma frase traduzida).
 Somente traduções geradas pelo Claude (Anthropic) são elegíveis para contribuição ao dicionário.
 Traduções obtidas via MyMemory ou LibreTranslate são usadas apenas para produzir o resultado da sua
 tradução e **não são publicadas** no dicionário público, em respeito aos termos de uso desses
-serviços.
+serviços. Segmentos contribuídos são publicados sob licença CC0 (domínio público) — ver os
+[Termos de Uso](termos-de-uso.md), Seção 7.
 
 ### 1.4 Dados técnicos locais
 - **Cache de traduções**: armazenado localmente em banco SQLite, no seu dispositivo, para evitar
@@ -88,7 +91,16 @@ funcionalidade específica que você aciona:
 - Não usamos os arquivos que você traduz para treinar modelos próprios;
 - Não coletamos dados de navegação ou publicidade de terceiros dentro do Aplicativo.
 
-## 3. Base legal e seus direitos (LGPD)
+## 3. Transferência Internacional de Dados
+
+Os serviços de tradução de terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate,
+Hugging Face) podem processar os dados enviados em servidores localizados fora do Brasil. Essa
+transferência internacional ocorre porque é necessária para o funcionamento das funcionalidades de
+tradução que você mesmo aciona ao usar o Aplicativo, nos termos do art. 33 da Lei Geral de Proteção
+de Dados (Lei nº 13.709/2018). Consulte a Seção 1.1 para as políticas de privacidade de cada
+provedor quanto à localização e ao tratamento de dados em seus servidores.
+
+## 4. Base legal e seus direitos (LGPD)
 
 Como o Aplicativo não coleta dados pessoais identificáveis em servidores próprios, o tratamento de
 dados pessoais por nossa parte é mínimo. Ainda assim, conforme a Lei Geral de Proteção de Dados
@@ -100,25 +112,33 @@ tratado:
 - Portabilidade, quando aplicável;
 - Informações sobre com quem os dados são compartilhados.
 
-Para exercer esses direitos, entre em contato pelo e-mail caiofabianodbz2@gmail.com.
+Para exercer esses direitos, entre em contato pelo e-mail caiofabianodbz2@gmail.com, que também
+serve, por ora, como canal para questões de proteção de dados.
 
-## 4. Menores de idade
+## 5. Menores de idade
 
 O Aplicativo não é direcionado a menores de 13 anos e não coleta intencionalmente dados pessoais
 de crianças.
 
-## 5. Retenção de dados
+## 6. Retenção de dados
 
 Dados armazenados localmente (cache, progresso, configurações) permanecem no seu dispositivo até
 que você os apague manualmente ou desinstale o Aplicativo. Contribuições já publicadas no
 dicionário colaborativo público permanecem lá, por serem de natureza pública e sem vínculo
 identificável a você.
 
-## 6. Alterações nesta Política
+## 7. Transferência de Titularidade
+
+Caso a titularidade do Campfire Tradutor seja transferida — por exemplo, em razão de constituição
+de pessoa jurídica, venda ou reorganização societária — esta Política será atualizada para
+refletir o novo responsável pelo tratamento de dados, e você será informado por meio de aviso no
+próprio Aplicativo ou nesta página antes que a mudança entre em vigor.
+
+## 8. Alterações nesta Política
 
 Esta Política pode ser atualizada periodicamente. A versão vigente estará sempre disponível em
 https://shirogoldboy.github.io/campfire-tradutor/politica-de-privacidade.
 
-## 7. Contato
+## 9. Contato
 
 Dúvidas sobre esta Política de Privacidade: caiofabianodbz2@gmail.com.

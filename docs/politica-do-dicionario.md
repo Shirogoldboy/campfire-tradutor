@@ -4,7 +4,7 @@ title: Política do Dicionário Colaborativo — Campfire Tradutor
 
 # Política do Dicionário Colaborativo — Campfire Tradutor
 
-**Versão:** v0.1 — Rascunho · **Data:** [DATA]
+**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
 
 ## 1. O que é
 
@@ -14,21 +14,33 @@ organizados por par de idiomas (ex: `en-ptbr.json`, `ja-ptbr.json`). Ele existe 
 já validadas possam ser reaproveitadas gratuitamente por qualquer pessoa que use o Campfire
 Tradutor, reduzindo o custo de tradução para toda a comunidade.
 
-## 2. Como as contribuições acontecem
+## 2. Quais traduções podem contribuir e como funciona a filtragem
 
-Enquanto você usa o Aplicativo, segmentos de texto traduzidos pelo Claude (Anthropic) passam por
-um processo interno — chamado internamente de *Campfire Smart Dictionary* [nome sugerido, ajuste
-como preferir] — antes de serem enviados, em segundo plano, ao dicionário público. Esse processo
-existe para manter a confiabilidade do dicionário, e seus critérios específicos fazem parte do
-funcionamento interno do Aplicativo.
+Nem toda tradução feita no Aplicativo chega a ser contribuída ao dicionário. Somente segmentos
+traduzidos pelo Claude (Anthropic) — chamado internamente de *Campfire Smart Dictionary* [nome
+sugerido, ajuste como preferir] — são elegíveis. Antes de serem enviados ao repositório público,
+em segundo plano, esses segmentos passam por critérios internos automatizados de qualidade e
+coerência; os critérios técnicos específicos fazem parte do funcionamento interno do Aplicativo e
+constituem seu principal diferencial competitivo, não sendo detalhados publicamente.
 
 Traduções obtidas gratuitamente via MyMemory ou LibreTranslate **não** são contribuídas ao
 dicionário público — são usadas apenas para gerar o resultado da sua própria tradução, em respeito
 aos termos de uso desses provedores.
 
-Atualmente o Aplicativo **não oferece** uma opção para desativar essa contribuição automática.
+## 3. Quando um par é descartado ou removido
 
-## 3. Natureza pública dos dados
+Um par de tradução pode deixar de ser incluído (ou ser removido após inclusão) quando:
+
+- Não atende aos critérios automatizados de qualidade e coerência mencionados na Seção 2;
+- Aparenta conter dados pessoais ou informações sensíveis (ver Seção 4);
+- É objeto de notificação procedente de violação de direitos autorais, nos termos do
+  [Aviso de Direitos Autorais](aviso-direitos-autorais.md);
+- É reportado como incorreto e a correção justifica a remoção (ver Seção 7).
+
+Atualmente o Aplicativo **não oferece** ao usuário uma opção para desativar a contribuição
+automática ao dicionário.
+
+## 4. Natureza pública dos dados e propriedade das contribuições
 
 Tudo que é contribuído ao dicionário:
 - É **público**, publicado em um repositório aberto no GitHub, sob backup automático diário;
@@ -40,25 +52,35 @@ Tudo que é contribuído ao dicionário:
   licença **CC0 1.0 Universal** (domínio público) do repositório
   github.com/Shirogoldboy/campfire-dictionary.
 
-## 4. Conteúdo protegido por direitos autorais
+Ao usar o Aplicativo, você reconhece que não retém, cede a terceiros ou reivindica qualquer
+direito de propriedade, exclusividade, atribuição ou remuneração sobre os segmentos que
+eventualmente contribuir ao dicionário — ver também os [Termos de Uso](termos-de-uso.md), Seção 7.
+
+## 5. Transparência
+
+Por ser um repositório público no GitHub, qualquer pessoa — incluindo você — pode inspecionar
+diretamente o conteúdo do dicionário colaborativo a qualquer momento, sem depender desta Política
+ou de qualquer canal de atendimento: basta acessar github.com/Shirogoldboy/campfire-dictionary.
+
+## 6. Conteúdo protegido por direitos autorais
 
 Ao traduzir arquivos com o Aplicativo, você é responsável por ter os direitos ou a autorização
 necessária sobre o conteúdo original. Caso um segmento de texto contribuído ao dicionário
 constitua violação de direitos autorais de terceiros, veja o processo de notificação no
 [Aviso de Direitos Autorais](aviso-direitos-autorais.md).
 
-## 5. Qualidade e correções
+## 7. Qualidade e correções
 
 O dicionário é mantido por contribuições automáticas de todos os usuários do Aplicativo. Isso
 significa que ele pode conter, ocasionalmente, traduções imprecisas. Se você encontrar uma
 entrada incorreta, pode reportar pelo e-mail caiofabianodbz2@gmail.com ou, por ser um repositório
 público no GitHub, abrir uma issue ou pull request diretamente no repositório do dicionário.
 
-## 6. Sem garantias
+## 8. Sem garantias
 
 O dicionário colaborativo é fornecido "como está", sem garantia de exatidão. Seu uso está sujeito
 às mesmas isenções de garantia descritas nos [Termos de Uso](termos-de-uso.md).
 
-## 7. Contato
+## 9. Contato
 
 caiofabianodbz2@gmail.com
