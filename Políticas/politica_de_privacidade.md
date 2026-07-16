@@ -1,0 +1,132 @@
+<!--
+RASCUNHO — NÃO PUBLICAR SEM REVISÃO JURÍDICA
+Necessário para a Play Store (URL pública) e para conformidade com a LGPD.
+Preencha os campos entre [colchetes] e confirme cada afirmação de fato antes de publicar
+(esta minuta assume o comportamento do app com base no código-fonte atual — revise se
+alguma funcionalidade mudou).
+-->
+
+# Política de Privacidade — Campfire Tradutor
+
+**Última atualização:** [DATA]
+
+Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
+Caio [SOBRENOME — CONFIRMAR], pessoa física ("nós"), trata dados ao ser usado nas versões desktop
+(Windows) e mobile (Android).
+
+Levamos privacidade a sério: o Aplicativo **não exige criação de conta**, **não coleta dados
+pessoais para fins de marketing** e **processa a maior parte do conteúdo localmente**, no seu
+próprio dispositivo.
+
+## 1. Quais dados tratamos
+
+### 1.1 Conteúdo dos arquivos que você escolhe traduzir
+Para realizar a tradução, o texto extraído do arquivo selecionado (documentos, legendas,
+planilhas, imagens, áudio, etc.) pode ser enviado a serviços de tradução, na seguinte ordem de
+prioridade:
+
+1. **Dicionário colaborativo público** (GitHub) — apenas consulta de segmentos já traduzidos.
+2. **MyMemory e LibreTranslate** — serviços públicos e gratuitos de tradução automática.
+3. **Claude (Anthropic)** — usado apenas quando as camadas gratuitas não são suficientes, com a
+   chave de API fornecida pelo próprio usuário.
+4. **Hugging Face (Whisper)** — usado para transcrição de áudio, quando aplicável, com token
+   fornecido pelo próprio usuário.
+
+Esses serviços são operados por terceiros e cada um possui seus próprios termos e política de
+privacidade. Recomendamos consultá-las:
+- MyMemory: https://mymemory.translated.net/terms-and-conditions
+- LibreTranslate (projeto): https://community.libretranslate.com/tos (as instâncias públicas
+  utilizadas — translate.terraprint.co, libretranslate.de — podem ter políticas próprias adicionais)
+- Anthropic: https://www.anthropic.com/legal/privacy
+- Hugging Face: https://huggingface.co/privacy
+
+### 1.2 Chaves de API
+Sua chave da Anthropic e/ou token da Hugging Face, quando fornecidos, são armazenados **apenas
+localmente** no seu dispositivo (no desktop, em um arquivo de configuração na pasta de dados do
+aplicativo; no mobile, em armazenamento local do app). Nós **não temos acesso** a essas chaves e
+elas **não são enviadas** para nossos servidores — porque não operamos servidor central para esse
+fim.
+
+### 1.3 Contribuições ao dicionário colaborativo
+Pares de texto original → tradução, gerados durante o uso do Aplicativo, podem ser enviados de
+forma assíncrona (em segundo plano) para um repositório público no GitHub
+(github.com/Shirogoldboy/campfire-dictionary), de forma a beneficiar outros usuários.
+
+O Aplicativo foi projetado para que o dicionário colaborativo contenha apenas pares de tradução
+destinados ao aprimoramento do sistema. São adotadas medidas para evitar a inclusão de informações
+que aparentem conter dados pessoais ou informações sensíveis; caso esse tipo de conteúdo seja
+identificado, ele não deve ser incorporado ao dicionário. Ainda assim, como o conteúdo de origem é
+definido pelo próprio usuário ao escolher o que traduzir, não é possível garantir de forma absoluta
+que nenhum segmento venha a conter, incidentalmente, algo que pareça um dado pessoal (por exemplo,
+um nome próprio dentro de uma frase traduzida).
+
+Somente traduções geradas pelo Claude (Anthropic) são elegíveis para contribuição ao dicionário.
+Traduções obtidas via MyMemory ou LibreTranslate são usadas apenas para produzir o resultado da sua
+tradução e **não são publicadas** no dicionário público, em respeito aos termos de uso desses
+serviços.
+
+### 1.4 Dados técnicos locais
+- **Cache de traduções**: armazenado localmente em banco SQLite, no seu dispositivo, para evitar
+  retraduzir o mesmo conteúdo.
+- **Progresso de tradução**: salvo localmente para permitir retomar tarefas longas.
+- Nenhum desses dados é enviado para nós.
+
+### 1.5 Permissões no aplicativo mobile
+O aplicativo Android pode solicitar as seguintes permissões, sempre vinculadas a uma
+funcionalidade específica que você aciona:
+- **Armazenamento/arquivos**: para selecionar e salvar os arquivos que você deseja traduzir.
+- **Microfone**: para a função de gravação de áudio ao vivo, que usa o reconhecimento de fala
+  nativo do Android/Google (processado pelo próprio sistema operacional, não por nós).
+- **Câmera**: usada em dois contextos distintos —
+  (a) leitura do QR Code exibido pelo aplicativo desktop, para conectar o celular ao servidor
+  local rodando no seu próprio computador; nesse caso a imagem da câmera não é armazenada nem
+  enviada a lugar nenhum, é apenas lida localmente para extrair o código;
+  (b) captura ou seleção de imagens no modo "Imagem / Painel", quando a foto **é enviada ao
+  Claude (Anthropic)** para identificar e traduzir o texto nela contido — sujeito à chave de API
+  fornecida por você e à política de privacidade da Anthropic (item 1.1).
+
+## 2. O que NÃO fazemos
+
+- Não vendemos, alugamos ou comercializamos seus dados;
+- Não exigimos cadastro, login ou conta de usuário;
+- Não usamos os arquivos que você traduz para treinar modelos próprios;
+- Não coletamos dados de navegação ou publicidade de terceiros dentro do Aplicativo.
+
+[CONFIRMAR: se o app não coleta NENHUM tipo de analytics/telemetria (ex: Firebase Analytics,
+Crashlytics), mantenha esta seção como está. Se algo for adicionado no futuro, esta política
+precisa ser atualizada para listar o que é coletado, com quem é compartilhado e a base legal.]
+
+## 3. Base legal e seus direitos (LGPD)
+
+Como o Aplicativo não coleta dados pessoais identificáveis em servidores próprios, o tratamento de
+dados pessoais por nossa parte é mínimo. Ainda assim, conforme a Lei Geral de Proteção de Dados
+(Lei nº 13.709/2018), você tem direito a solicitar, em relação a qualquer dado pessoal eventualmente
+tratado:
+
+- Confirmação da existência de tratamento;
+- Acesso, correção ou exclusão dos dados;
+- Portabilidade, quando aplicável;
+- Informações sobre com quem os dados são compartilhados.
+
+Para exercer esses direitos, entre em contato pelo e-mail caiofabianodbz2@gmail.com.
+
+## 4. Menores de idade
+
+O Aplicativo não é direcionado a menores de 13 anos e não coleta intencionalmente dados pessoais
+de crianças.
+
+## 5. Retenção de dados
+
+Dados armazenados localmente (cache, progresso, configurações) permanecem no seu dispositivo até
+que você os apague manualmente ou desinstale o Aplicativo. Contribuições já publicadas no
+dicionário colaborativo público permanecem lá, por serem de natureza pública e sem vínculo
+identificável a você.
+
+## 6. Alterações nesta Política
+
+Esta Política pode ser atualizada periodicamente. A versão vigente estará sempre disponível em
+https://shirogoldboy.github.io/campfire-tradutor/politica-de-privacidade.
+
+## 7. Contato
+
+Dúvidas sobre esta Política de Privacidade: caiofabianodbz2@gmail.com.
