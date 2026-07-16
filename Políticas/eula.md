@@ -1,11 +1,11 @@
 <!--
-RASCUNHO — NÃO PUBLICAR SEM REVISÃO JURÍDICA
-Contrato de Licença de Usuário Final (EULA). Preencha os campos entre [colchetes].
+v0.1 — RASCUNHO. Próxima etapa: revisão técnica (Etapa 6), depois revisão jurídica (v0.3).
+Histórico de versões em: Políticas/Versões Jurídicas/EULA/
 -->
 
 # Contrato de Licença de Usuário Final (EULA) — Campfire Tradutor
 
-**Última atualização:** [DATA]
+**Versão:** v0.1 — Rascunho · **Data:** [DATA]
 
 Este Contrato de Licença de Usuário Final ("EULA") é um acordo legal entre você (pessoa física ou
 jurídica) e Caio [SOBRENOME — CONFIRMAR], pessoa física ("Licenciante") para o uso do software

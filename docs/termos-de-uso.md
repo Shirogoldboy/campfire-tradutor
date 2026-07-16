@@ -4,7 +4,7 @@ title: Termos de Uso — Campfire Tradutor
 
 # Termos de Uso — Campfire Tradutor
 
-**Última atualização:** [DATA]
+**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
 
 ## 1. Aceitação dos Termos
 
@@ -36,7 +36,30 @@ Qualquer custo de uso da API da Anthropic (ou de outros serviços de terceiros q
 própria) é de responsabilidade exclusiva do usuário, conforme os termos de preço do respectivo
 provedor.
 
-## 4. Uso Permitido
+O Desenvolvedor não garante a disponibilidade, exatidão, desempenho ou continuidade dos serviços
+de terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate, Hugging Face, GitHub).
+Alterações nos termos, preços, limites de uso ou a descontinuação desses serviços por seus
+respectivos provedores estão fora do controle do Desenvolvedor e podem afetar o funcionamento do
+Aplicativo, sem que isso gere direito a indenização.
+
+## 4. Disponibilidade, Suspensão e Descontinuação do Serviço
+
+O Aplicativo depende, em parte, de serviços gratuitos de terceiros (dicionário colaborativo,
+MyMemory, LibreTranslate) cuja disponibilidade contínua não é garantida pelo Desenvolvedor. O
+Desenvolvedor pode suspender, limitar ou descontinuar, a qualquer momento e sem aviso prévio,
+qualquer funcionalidade do Aplicativo — incluindo o modo gratuito, a contribuição ao dicionário
+colaborativo ou o próprio Aplicativo como um todo — sem que isso gere direito a indenização,
+reembolso (quando aplicável) ou qualquer outra compensação, ressalvadas as hipóteses de má-fé ou
+dolo do Desenvolvedor.
+
+## 5. Atualizações do Aplicativo
+
+O Desenvolvedor pode, a seu critério, lançar atualizações que adicionem, modifiquem ou removam
+funcionalidades do Aplicativo, incluindo formatos de arquivo suportados. Não há garantia de
+suporte contínuo a versões antigas do Aplicativo, nem de compatibilidade retroativa entre
+versões. Recomenda-se manter o Aplicativo atualizado para melhor experiência e segurança.
+
+## 6. Uso Permitido
 
 Você concorda em usar o Aplicativo apenas para fins lícitos, incluindo, mas não se limitando a:
 
@@ -47,12 +70,14 @@ Você concorda em **não** usar o Aplicativo para:
 
 - Traduzir, reproduzir ou distribuir conteúdo protegido por direitos autorais sem autorização,
   quando isso violar a lei aplicável ou os direitos de terceiros;
-- Praticar engenharia reversa do software com o objetivo de contornar suas licenças ou revender
-  o Aplicativo sem autorização;
+- Praticar engenharia reversa, descompilação ou desmontagem do aplicativo **oficialmente
+  distribuído** (instalador Windows, pacote Android) com o objetivo de contornar mecanismos de
+  licenciamento, autenticação ou proteção — sem prejuízo dos direitos já concedidos de forma
+  independente sobre o código-fonte aberto, nos termos da Seção 8;
 - Qualquer atividade que sobrecarregue, danifique ou comprometa a infraestrutura dos serviços de
   terceiros integrados (dicionário colaborativo, APIs de tradução, etc).
 
-## 5. Dicionário Colaborativo
+## 7. Dicionário Colaborativo e Propriedade das Contribuições
 
 O Aplicativo contribui automaticamente, em segundo plano, com pares de texto original/traduzido
 para um dicionário público e de código aberto (ver [Política do Dicionário](politica-do-dicionario.md)).
@@ -61,44 +86,60 @@ podem ser publicados nesse dicionário público. O Aplicativo foi projetado para
 de dados pessoais nesse processo, mas não pode garantir de forma absoluta que nenhum segmento
 contenha, incidentalmente, informação desse tipo — ver a [Política de Privacidade](politica-de-privacidade.md).
 
-## 6. Propriedade Intelectual
+Ao usar o Aplicativo, você reconhece e concorda que os segmentos de texto traduzidos pelo Claude e
+contribuídos ao dicionário colaborativo são publicados sob **licença CC0 1.0 Universal (domínio
+público)** no repositório campfire-dictionary. Isso significa que você não retém, cede a
+terceiros ou reivindica qualquer direito de propriedade, exclusividade, atribuição ou remuneração
+sobre esses segmentos — eles passam a integrar um acervo de domínio público, disponível para uso
+irrestrito por qualquer pessoa.
 
-O código-fonte do Campfire Tradutor está disponível sob **licença MIT** no GitHub
-(github.com/Shirogoldboy/campfire-tradutor). O dicionário colaborativo
-(github.com/Shirogoldboy/campfire-dictionary) é público e está sob **licença CC0 1.0 Universal**
-(domínio público). Marcas, nome e identidade visual do Campfire Tradutor pertencem ao Desenvolvedor. Ver também o
-[Aviso de Direitos Autorais](aviso-direitos-autorais.md) para notificações de violação de
-direitos autorais.
+## 8. Propriedade Intelectual
 
-## 7. Isenção de Garantias
+As restrições de uso descritas na Seção 6 aplicam-se ao aplicativo **oficialmente distribuído**
+(binários, instaladores e pacotes publicados pelo Desenvolvedor). Elas não restringem os direitos
+já concedidos, de forma independente, a qualquer pessoa que obtenha o código-fonte diretamente do
+repositório público sob **licença MIT** (github.com/Shirogoldboy/campfire-tradutor) — a qual, por
+si só, permite uso, cópia, modificação, fusão, publicação, distribuição, sublicenciamento e venda
+de cópias do código-fonte, nos termos da própria licença MIT.
+
+O dicionário colaborativo (github.com/Shirogoldboy/campfire-dictionary) é público e está sob
+licença CC0 1.0 Universal (domínio público). Marcas, nome e identidade visual do Campfire
+Tradutor pertencem ao Desenvolvedor. Ver também o [Aviso de Direitos Autorais](aviso-direitos-autorais.md)
+para notificações de violação de direitos autorais.
+
+## 9. Isenção de Garantias
 
 O Aplicativo é fornecido "como está" (*as is*), sem garantias de qualquer tipo, expressas ou
 implícitas, incluindo, mas não se limitando a, garantias de precisão das traduções, adequação a
 um propósito específico ou ausência de erros. Traduções automáticas — gratuitas ou via IA — podem
 conter imprecisões.
 
-## 8. Limitação de Responsabilidade
+## 10. Limitação de Responsabilidade
 
 Na máxima extensão permitida pela lei aplicável, o Desenvolvedor não será responsável por danos
 diretos, indiretos, incidentais ou consequentes decorrentes do uso ou da impossibilidade de uso
 do Aplicativo, incluindo perda de dados, corrupção de arquivos de terceiros (ex: saves de jogos,
 ROMs) ou custos de API de terceiros.
 
+Em particular, o Desenvolvedor não se responsabiliza por indisponibilidade, instabilidade,
+alteração de termos, encerramento ou qualquer outra ação unilateral dos provedores de serviços de
+terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate, Hugging Face, GitHub).
+
 Recomenda-se **sempre manter backup** dos arquivos originais antes de traduzi-los, especialmente
 arquivos binários de jogos e ROMs.
 
-## 9. Alterações nos Termos
+## 11. Alterações nos Termos
 
 O Desenvolvedor pode atualizar estes Termos periodicamente. A versão vigente estará sempre
 disponível em https://shirogoldboy.github.io/campfire-tradutor/termos-de-uso. O uso continuado
 do Aplicativo após uma atualização implica aceitação dos novos termos.
 
-## 10. Lei Aplicável
+## 12. Lei Aplicável
 
 Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro de
 [cidade/comarca — CONFIRMAR] para dirimir quaisquer controvérsias, salvo disposição legal em
 contrário.
 
-## 11. Contato
+## 13. Contato
 
 Dúvidas sobre estes Termos: caiofabianodbz2@gmail.com.

@@ -1,6 +1,6 @@
 <!--
-RASCUNHO — NÃO PUBLICAR SEM REVISÃO JURÍDICA
-Necessário para a Play Store (URL pública) e para conformidade com a LGPD.
+v0.1 — RASCUNHO. Próxima etapa: revisão técnica/jurídica (Etapa 7), depois de Termos e EULA concluídos.
+Histórico de versões em: Políticas/Versões Jurídicas/Política de Privacidade/
 Preencha os campos entre [colchetes] e confirme cada afirmação de fato antes de publicar
 (esta minuta assume o comportamento do app com base no código-fonte atual — revise se
 alguma funcionalidade mudou).
@@ -8,7 +8,7 @@ alguma funcionalidade mudou).
 
 # Política de Privacidade — Campfire Tradutor
 
-**Última atualização:** [DATA]
+**Versão:** v0.1 — Rascunho · **Data:** [DATA]
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio [SOBRENOME — CONFIRMAR], pessoa física ("nós"), trata dados ao ser usado nas versões desktop

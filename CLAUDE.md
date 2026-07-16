@@ -21,6 +21,12 @@ C:\Users\Pichau\Documents\campfire projeto
 └── App.js # App completo (único arquivo principal)
 ```
 
+## Documentação Jurídica e Versionamento
+- `Políticas/*.md` — versão **atual** de cada documento (Termos de Uso, EULA, Política de Privacidade, Política do Dicionário, Aviso de Direitos Autorais) + `.docx` prontos pra enviar ao advogado.
+- `Políticas/Versões Jurídicas/<Nome do Documento>/vX.Y_*.md` — histórico imutável de cada versão (snapshot). Nunca editar um snapshot já criado — sempre gerar um novo arquivo pra próxima versão.
+- `docs/*.md` — espelho da versão atual, preparado para GitHub Pages (Settings → Pages ainda não habilitado, aguardando confirmação).
+- Convenção de versão (definida pelo advogado em 2026-07-16): **v0.1** Rascunho → **v0.2** Revisão Técnica (Claude) → **v0.3** Revisão Jurídica (advogado) → **v1.0** Publicação. Um documento só é considerado "congelado" depois da v0.3.
+
 ## Stack Tecnológico
 **Desktop:** Electron 42 + React + Vite + Python 3.14 + FastAPI + PyInstaller
 **Mobile:** Expo + React Native + EAS Build (package: com.campfire.tradutor)
@@ -149,28 +155,25 @@ pdfjs-dist, expo-build-properties
 - [ ] Adicionar opção no Setup pra desativar a contribuição automática ao dicionário colaborativo (recomendação do advogado — dá ao usuário controle sobre o que é compartilhado)
 
 ### Fase Jurídica — acompanhamento com o advogado (Caio's mãe)
-Ordem sugerida pelo parecer jurídico de 2026-07-16:
+Estrutura por Etapas do 2º parecer jurídico (2026-07-16), que refina o plano de fases anterior.
+Regra do advogado: **qualidade e consistência, não velocidade** — cada documento avança em
+versões (v0.1 Rascunho → v0.2 Revisão Técnica → v0.3 Revisão Jurídica → v1.0 Publicação) e só
+"congela" depois de passar pela revisão jurídica real. Histórico de cada documento fica em
+`Políticas/Versões Jurídicas/<Nome do Documento>/`.
 
-**Fase 1 — Documentação jurídica**
-- [x] Termos de Uso — `Políticas/termos_de_uso.md` + `docs/termos-de-uso.md`
-- [x] EULA — `Políticas/eula.md` + `docs/eula.md`
-- [x] Política de Privacidade — `Políticas/politica_de_privacidade.md` + `docs/politica-de-privacidade.md`
-- [x] Política do Dicionário Colaborativo — `Políticas/politica_do_dicionario.md` + `docs/politica-do-dicionario.md`
-- [x] Aviso de Direitos Autorais — `Políticas/aviso_direitos_autorais.md` + `docs/aviso-direitos-autorais.md`
-- [x] Licença do repositório do app — MIT, adicionado em 2026-07-16 (`LICENSE` na raiz)
-- [x] Licença do repositório do dicionário (campfire-dictionary) — CC0 1.0 Universal, adicionado em 2026-07-16
-- [ ] Revisão final do advogado + preencher campos pendentes: sobrenome completo do Caio, cidade/comarca (foro), data de vigência
+- [x] Etapa 1-4 — Levantamento técnico, arquitetura documentada, inventário de APIs, Memorial Técnico (=CLAUDE.md)
+- [x] Etapa 5 — Primeiro rascunho dos 5 documentos jurídicos (Termos, EULA, Privacidade, Dicionário, Aviso)
+- [x] **Etapa 5.1 — Revisão técnica dos Termos de Uso** (2026-07-16): `Políticas/termos_de_uso.md` agora em **v0.2**. Adicionadas cláusulas de disponibilidade/suspensão do serviço, atualização do app, propriedade das contribuições (CC0), limitação de responsabilidade quanto a APIs de terceiros, e reconciliação entre a proibição de engenharia reversa e a licença MIT do código-fonte (a restrição agora é escopada ao app oficialmente distribuído, não ao repositório aberto). Aguardando Revisão Jurídica do advogado → v0.3.
+- [ ] Etapa 6 — Elaborar/revisar a EULA (principal instrumento de proteção do código) — ainda em v0.1
+- [ ] Etapa 7 — Revisar a Política de Privacidade (mais fácil depois que Termos estiver "congelado") — ainda em v0.1
+- [ ] Etapa 8 — Revisar a Política do Dicionário Colaborativo (diferencial: filtragem, descarte de pares, transparência) — ainda em v0.1
+- [ ] Etapa 9 — Revisar o Aviso de Direitos Autorais — ainda em v0.1
+- [ ] Etapa 10 — Busca oficial de anterioridade da marca "Campfire Tradutor" no INPI
+- [ ] Etapa 11 — Pedido de registro da marca no INPI (~R$355)
+- [ ] Etapa 12 — Registro do programa de computador no INPI (~R$80)
+- [ ] Preencher campos pendentes em todos os documentos: sobrenome completo do Caio, cidade/comarca (foro)
 - [ ] Publicar via GitHub Pages (`docs/` já preparado — falta habilitar Settings → Pages e confirmar antes de ir ao ar)
-
-**Fase 2 — Propriedade intelectual**
-- [ ] Busca oficial de anterioridade da marca "Campfire Tradutor" no INPI
-- [ ] Pedido de registro da marca no INPI (~R$355)
-- [ ] Registro do programa de computador no INPI (~R$80)
-
-**Fase 3 — Conformidade contínua**
-- [ ] Revisar termos das APIs de terceiros (MyMemory, Anthropic, Hugging Face) sempre que eles mudarem
-- [ ] Revisar os documentos legais a cada nova funcionalidade relevante (ex: DOCX/XLSX já cobertos; repetir quando publicidade, contas ou servidor próprio entrarem em cena)
-- [ ] Atualizar a documentação antes de cada publicação relevante (Play Store, novo domínio, etc.)
+- [ ] Conformidade contínua: revisar termos das APIs de terceiros sempre que mudarem; revisar os documentos a cada nova funcionalidade relevante; atualizar antes de cada publicação (Play Store, novo domínio, etc.)
 
 ### Médio prazo (produto)
 - [ ] Pipeline de áudio aprimorado (tudo via Claude, sem Whisper local)
