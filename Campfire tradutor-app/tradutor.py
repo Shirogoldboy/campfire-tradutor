@@ -350,7 +350,7 @@ def traduzir_bloco(texto, idioma="português brasileiro coloquial", instrucao_ex
 def traduzir_lista(textos, instrucao_extra="", dict_key=None):
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    # ── Consulta dicionário antes de mandar pro Claude ────────────────────────
+    # ── Camada 1: consulta dicionário colaborativo ────────────────────────────
     dicionario = fetch_dictionary(dict_key) if dict_key else {}
     pre_traduzidos = {}
     textos_novos_idx = []
@@ -363,12 +363,44 @@ def traduzir_lista(textos, instrucao_extra="", dict_key=None):
 
     if pre_traduzidos:
         print(f"📖 Dicionário: {len(pre_traduzidos)} segmento(s) reutilizados, "
-              f"{len(textos_novos_idx)} novos pro Claude.", flush=True)
+              f"{len(textos_novos_idx)} novos.", flush=True)
 
-    # ── Só batcheia o que não tá no dicionário ────────────────────────────────
-    textos_para_traduzir = [textos[i] for i in textos_novos_idx]
+    # ── Camada 2: tenta tradução gratuita (MyMemory → LibreTranslate) ─────────
+    if dict_key:
+        idioma_origem_layer2 = dict_key.split('-')[0]
+    elif textos_novos_idx:
+        idioma_origem_layer2 = detectar_idioma_texto(' '.join(textos[i] for i in textos_novos_idx[:10]))
+    else:
+        idioma_origem_layer2 = None
+
+    resultado_gratis = {}  # posição em textos_novos_idx -> tradução
+
+    if textos_novos_idx and idioma_origem_layer2:
+        def tentar_gratis(pos, texto):
+            trad = traduzir_com_mymemory(texto, idioma_origem_layer2, _idioma_global)
+            if not trad:
+                trad = traduzir_com_libretranslate(texto, idioma_origem_layer2, _idioma_global)
+            if trad and avaliar_qualidade_traducao(texto, trad):
+                return pos, trad
+            return pos, None
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futuros = [executor.submit(tentar_gratis, pos, textos[i])
+                       for pos, i in enumerate(textos_novos_idx)]
+            for futuro in as_completed(futuros):
+                pos, trad = futuro.result()
+                if trad:
+                    resultado_gratis[pos] = trad
+
+        if resultado_gratis:
+            print(f"✅ Gratuito: {len(resultado_gratis)}/{len(textos_novos_idx)} segmento(s) "
+                  f"traduzido(s) sem tokens.", flush=True)
+
+    # ── Camada 3: o que sobrou (sem tradução gratuita) vai pro Claude, em batches ──
+    indices_para_claude = [pos for pos in range(len(textos_novos_idx)) if pos not in resultado_gratis]
+    textos_para_traduzir = [textos[textos_novos_idx[pos]] for pos in indices_para_claude]
+
     batches, batch_idx, batch_txt, chars = [], [], [], 0
-
     for i, texto in enumerate(textos_para_traduzir):
         if chars + len(texto) > TAMANHO_CHUNK and batch_idx:
             batches.append((batch_idx, batch_txt))
@@ -380,7 +412,7 @@ def traduzir_lista(textos, instrucao_extra="", dict_key=None):
     if batch_idx:
         batches.append((batch_idx, batch_txt))
 
-    traduzidos_novos = [''] * len(textos_para_traduzir)
+    traduzidos_claude = [''] * len(textos_para_traduzir)
     total = len(batches)
     concluidos = [0]
 
@@ -406,22 +438,40 @@ def traduzir_lista(textos, instrucao_extra="", dict_key=None):
                 try:
                     indices, partes, lote = futuro.result()
                     for i, idx in enumerate(indices):
-                        traduzidos_novos[idx] = partes[i].strip() if i < len(partes) else textos_para_traduzir[idx]
+                        traduzidos_claude[idx] = partes[i].strip() if i < len(partes) else textos_para_traduzir[idx]
                 except Exception as e:
                     print(f"AVISO: erro num batch: {e}", flush=True)
 
-    # ── Mescla dicionário + Claude ────────────────────────────────────────────
+    # ── Reconstrói na ordem de textos_novos_idx ────────────────────────────────
+    traduzidos_novos = [''] * len(textos_novos_idx)
+    for pos, trad in resultado_gratis.items():
+        traduzidos_novos[pos] = trad
+    for local_i, pos in enumerate(indices_para_claude):
+        traduzidos_novos[pos] = traduzidos_claude[local_i]
+
+    # ── Mescla dicionário + novos ──────────────────────────────────────────────
     traduzidos = [''] * len(textos)
     for i, trad in pre_traduzidos.items():
         traduzidos[i] = trad
     for pos, i in enumerate(textos_novos_idx):
         traduzidos[i] = traduzidos_novos[pos]
 
-    # ── Contribui traduções novas pro dicionário em background ────────────────
-    if dict_key and textos_novos_idx:
-        novas = {textos[i]: traduzidos[i] for i in textos_novos_idx if traduzidos[i]}
-        if novas:
-            contribute_dictionary(dict_key, novas)
+    # ── Contribui pro dicionário em background — SÓ traduções do Claude ───────
+    # MyMemory proíbe republicar sua "Public Data" (segmentos crus) em outro
+    # repositório (ver Termos do MyMemory). Por isso traduções gratuitas
+    # (MyMemory/LibreTranslate) são usadas no resultado do usuário mas NUNCA
+    # contribuídas ao dicionário público — só as geradas pelo próprio Claude.
+    if dict_key and indices_para_claude:
+        def contribuir_claude():
+            novas = {}
+            for local_i, pos in enumerate(indices_para_claude):
+                i = textos_novos_idx[pos]
+                original, trad = textos[i], traduzidos_claude[local_i]
+                if trad:
+                    novas[original] = trad
+            if novas:
+                contribute_dictionary(dict_key, novas)
+        threading.Thread(target=contribuir_claude, daemon=True).start()
 
     return traduzidos
 
@@ -661,6 +711,187 @@ def processar_epub(caminho):
         conteudo = f.read()
     os.remove(temp_path)
     return conteudo, '.epub'
+
+def processar_docx(caminho):
+    from docx import Document
+
+    doc = Document(caminho)
+
+    def coletar_paragrafos(paragrafos):
+        return [p for p in paragrafos if p.text.strip()]
+
+    paragrafos_alvo = list(coletar_paragrafos(doc.paragraphs))
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                paragrafos_alvo += coletar_paragrafos(cell.paragraphs)
+    for section in doc.sections:
+        for parte in (section.header, section.footer):
+            paragrafos_alvo += coletar_paragrafos(parte.paragraphs)
+
+    textos = [p.text for p in paragrafos_alvo]
+    idioma_origem = detectar_idioma_texto(' '.join(textos[:20]))
+    dict_key = get_dict_key(idioma_origem, _idioma_global)
+    print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
+
+    print(f"Traduzindo {len(textos)} parágrafo(s)...", flush=True)
+    traduzidos = traduzir_lista(textos, dict_key=dict_key)
+
+    for p, trad in zip(paragrafos_alvo, traduzidos):
+        if p.runs:
+            p.runs[0].text = trad
+            for run in p.runs[1:]:
+                run.text = ''
+        else:
+            p.text = trad
+
+    pasta = os.path.dirname(caminho)
+    nome_base = os.path.splitext(os.path.basename(caminho))[0]
+    temp_path = os.path.join(pasta, f"{nome_base}_docx_temp.docx")
+    doc.save(temp_path)
+
+    with open(temp_path, 'rb') as f:
+        conteudo = f.read()
+    os.remove(temp_path)
+    return conteudo, '.docx'
+
+def processar_xlsx(caminho):
+    import openpyxl
+
+    wb = openpyxl.load_workbook(caminho)
+    celulas = []
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for cell in row:
+                valor = cell.value
+                if isinstance(valor, str) and valor.strip() and not valor.startswith('='):
+                    celulas.append(cell)
+
+    textos = [c.value for c in celulas]
+    idioma_origem = detectar_idioma_texto(' '.join(textos[:20]))
+    dict_key = get_dict_key(idioma_origem, _idioma_global)
+    print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
+
+    print(f"Traduzindo {len(textos)} célula(s)...", flush=True)
+    traduzidos = traduzir_lista(textos, dict_key=dict_key)
+
+    for cell, trad in zip(celulas, traduzidos):
+        cell.value = trad
+
+    pasta = os.path.dirname(caminho)
+    nome_base = os.path.splitext(os.path.basename(caminho))[0]
+    temp_path = os.path.join(pasta, f"{nome_base}_xlsx_temp.xlsx")
+    wb.save(temp_path)
+
+    with open(temp_path, 'rb') as f:
+        conteudo = f.read()
+    os.remove(temp_path)
+    return conteudo, '.xlsx'
+
+def processar_po(caminho):
+    import polib
+
+    po = polib.pofile(caminho)
+    entradas = [e for e in po if e.msgid.strip() and not e.obsolete]
+    singulares = [e for e in entradas if not e.msgid_plural]
+    plurais    = [e for e in entradas if e.msgid_plural]
+
+    amostra = ' '.join(e.msgid for e in (singulares + plurais)[:20])
+    idioma_origem = detectar_idioma_texto(amostra) if amostra else 'en'
+    dict_key = get_dict_key(idioma_origem, _idioma_global)
+    print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
+    print(f"Traduzindo {len(entradas)} entrada(s)...", flush=True)
+
+    if singulares:
+        traduzidos = traduzir_lista([e.msgid for e in singulares], dict_key=dict_key)
+        for e, trad in zip(singulares, traduzidos):
+            e.msgstr = trad
+
+    if plurais:
+        trad_sing = traduzir_lista([e.msgid for e in plurais], dict_key=dict_key)
+        trad_plur = traduzir_lista([e.msgid_plural for e in plurais], dict_key=dict_key)
+        for e, ts, tp in zip(plurais, trad_sing, trad_plur):
+            e.msgstr_plural = {'0': ts, '1': tp}
+
+    pasta = os.path.dirname(caminho)
+    nome_base = os.path.splitext(os.path.basename(caminho))[0]
+    temp_path = os.path.join(pasta, f"{nome_base}_po_temp.po")
+    po.save(temp_path)
+
+    with open(temp_path, 'r', encoding='utf-8') as f:
+        conteudo = f.read()
+    os.remove(temp_path)
+    return conteudo, '.po'
+
+
+def _unescape_strings_valor(s):
+    return s.replace('\\"', '"').replace('\\n', '\n').replace('\\\\', '\\')
+
+def _escape_strings_valor(s):
+    return s.replace('\\', '\\\\').replace('\n', '\\n').replace('"', '\\"')
+
+def processar_strings(caminho):
+    with open(caminho, 'r', encoding='utf-8') as f:
+        conteudo = f.read()
+
+    pattern = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
+    matches = list(pattern.finditer(conteudo))
+    if not matches:
+        raise Exception("Nenhum par chave/valor encontrado neste arquivo .strings.")
+
+    valores = [_unescape_strings_valor(m.group(2)) for m in matches]
+    idioma_origem = detectar_idioma_texto(' '.join(valores[:20]))
+    dict_key = get_dict_key(idioma_origem, _idioma_global)
+    print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
+    print(f"Traduzindo {len(matches)} entrada(s)...", flush=True)
+
+    traduzidos = traduzir_lista(valores, dict_key=dict_key)
+
+    resultado, offset = list(conteudo), 0
+    for m, trad in zip(matches, traduzidos):
+        s, e = m.start(2) + offset, m.end(2) + offset
+        trad_escapado = _escape_strings_valor(trad)
+        resultado[s:e] = list(trad_escapado)
+        offset += len(trad_escapado) - len(m.group(2))
+    return ''.join(resultado), '.strings'
+
+
+def processar_resx(caminho):
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(caminho)
+    root = tree.getroot()
+
+    entradas = []
+    for data in root.findall('data'):
+        if data.get('type'):
+            continue
+        value_el = data.find('value')
+        if value_el is not None and value_el.text and value_el.text.strip():
+            entradas.append(value_el)
+
+    if not entradas:
+        raise Exception("Nenhuma entrada de texto traduzível encontrada neste arquivo .resx.")
+
+    textos = [el.text for el in entradas]
+    idioma_origem = detectar_idioma_texto(' '.join(textos[:20]))
+    dict_key = get_dict_key(idioma_origem, _idioma_global)
+    print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
+    print(f"Traduzindo {len(entradas)} entrada(s)...", flush=True)
+
+    traduzidos = traduzir_lista(textos, dict_key=dict_key)
+    for el, trad in zip(entradas, traduzidos):
+        el.text = trad
+
+    pasta = os.path.dirname(caminho)
+    nome_base = os.path.splitext(os.path.basename(caminho))[0]
+    temp_path = os.path.join(pasta, f"{nome_base}_resx_temp.resx")
+    tree.write(temp_path, encoding='utf-8', xml_declaration=True)
+
+    with open(temp_path, 'r', encoding='utf-8') as f:
+        conteudo = f.read()
+    os.remove(temp_path)
+    return conteudo, '.resx'
 
 def detectar_texto_8bit(data):
     pattern = re.compile(rb'[\x20-\x7E]{%d,}' % MIN_LEN_BINARIO)
@@ -1821,6 +2052,12 @@ EXTENSOES = {
     '.mp4':  processar_video,
     '.mp3':  processar_mp3,
     '.epub': processar_epub,
+    '.docx': processar_docx,
+    '.xlsx': processar_xlsx,
+    # ── Localização de software (i18n) ──
+    '.po':     processar_po,
+    '.strings': processar_strings,
+    '.resx':   processar_resx,
     '.bin':  processar_binario,
     '.dat':  processar_binario,
     '.iso':  processar_iso,

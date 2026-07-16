@@ -68,7 +68,8 @@ ipcMain.handle('select-file', async (_, exts) => {
   const extsSemPonto = exts && exts.length > 0
     ? exts.map(e => e.replace('.', ''))
     : [
-        'txt','srt','json','xml','csv','mkv','mp4','pdf','mp3','epub',
+        'txt','srt','json','xml','csv','mkv','mp4','pdf','mp3','epub','docx','xlsx',
+        'po','strings','resx',
         'bin','dat','iso','zip','rar',
         'nds','3ds','nsp','xci',
         'jpg','jpeg','png','webp','gif'

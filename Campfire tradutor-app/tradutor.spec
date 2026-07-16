@@ -8,6 +8,10 @@ a = Analysis(
     hiddenimports=[
     'anthropic', 'dotenv', 'pdfplumber', 'fpdf',
     'ebooklib', 'bs4', 'pycdlib', 'faster_whisper',
+    'docx', 'docx.oxml', 'lxml', 'lxml.etree',
+    'openpyxl',
+    'polib',
+    'xml.etree.ElementTree',
     'rarfile', 'sqlite3', 'hashlib', 'concurrent.futures',
     'pydantic', 'httpx', 'anyio', 'certifi',
     'requests', 'requests.adapters', 'requests.auth',

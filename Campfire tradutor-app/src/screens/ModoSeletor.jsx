@@ -3,8 +3,8 @@ export const MODOS = [
     id: 'texto',
     icone: '📄',
     label: 'Texto / Documento',
-    desc: '.txt · .srt · .json · .xml · .csv · .epub',
-    exts: ['.txt', '.srt', '.json', '.xml', '.csv', '.epub'],
+    desc: '.txt · .srt · .json · .xml · .csv · .epub · .docx · .xlsx',
+    exts: ['.txt', '.srt', '.json', '.xml', '.csv', '.epub', '.docx', '.xlsx'],
     aviso: null,
   },
   {
@@ -45,6 +45,14 @@ export const MODOS = [
     label: 'Arquivo Compactado',
     desc: '.zip · .rar',
     exts: ['.zip', '.rar'],
+    aviso: null,
+  },
+  {
+    id: 'localizacao',
+    icone: '🌐',
+    label: 'Localização de Software',
+    desc: '.po · .strings · .resx',
+    exts: ['.po', '.strings', '.resx'],
     aviso: null,
   },
 ]
