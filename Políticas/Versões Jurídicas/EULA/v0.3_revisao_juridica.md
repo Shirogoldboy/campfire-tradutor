@@ -65,9 +65,9 @@ permitido por lei:
 ## 5. Componentes de Terceiros
 
 O Software incorpora bibliotecas e componentes de terceiros de código aberto (ex: Electron, React,
-Python, FastAPI, PyInstaller, Whisper, Tesseract OCR, ndspy, entre outros), cada um sujeito à sua
-própria licença. Uma lista de componentes e licenças pode ser consultada em [URL ou arquivo
-NOTICE/THIRD-PARTY].
+Python, FastAPI, PyInstaller, Whisper, Tesseract OCR, entre outros), cada um sujeito à sua
+própria licença. A lista completa de componentes e licenças está no arquivo
+[NOTICE.md](../NOTICE.md), na raiz do repositório.
 
 O uso de serviços de terceiros integrados ao Software (Anthropic Claude, MyMemory, LibreTranslate,
 Hugging Face, GitHub) está sujeito aos termos de uso e políticas de privacidade de cada um desses

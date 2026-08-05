@@ -65,7 +65,7 @@ Contribuição assíncrona ao dicionário (background thread)
 - Binários: varredura 8bit/16bit/ShiftJIS/EUC-JP (.bin .dat)
 - ISO: pycdlib + raw scan chunks 5MB
 - Compactados: zipfile + rarfile (.zip .rar)
-- Nintendo DS: ndspy + NARC parser/remontagem + BMG parser/remontagem + LZ10/LZ11
+- Nintendo DS: container .nds próprio (parsear_nds_rom/remontar_nds_rom, substituindo o ndspy por questão de licença — ver Observações Importantes) + NARC parser/remontagem + BMG parser/remontagem + LZ10/LZ11
 - Nintendo 3DS/Switch: SARC parser/remontagem + MSBT parser/remontagem
 
 ### Mobile (sem PC)
@@ -126,9 +126,9 @@ git push
 
 ## Dependências Python principais
 ```
-anthropic, python-dotenv, pdfplumber, fpdf, ebooklib, bs4
+anthropic, python-dotenv, pdfplumber, fpdf, bs4
 pycdlib, faster-whisper, rarfile, sqlite3, requests
-langdetect, Pillow, ndspy, ncompress, pymupdf, pytesseract
+langdetect, Pillow, ncompress, pdf2image, pytesseract
 qrcode[pil], uvicorn, fastapi
 python-docx, openpyxl, polib
 ```
@@ -190,12 +190,18 @@ versões (v0.1 Rascunho → v0.2 Revisão Técnica → v0.3 Revisão Jurídica �
 ## Observações Importantes
 - O sistema de 3 camadas (dicionário → gratuito → Claude), internamente chamado de **Campfire Smart Dictionary** [nome sugerido pelo advogado, ajustar se preferir outro], estava com a camada gratuita (MyMemory/LibreTranslate) implementada mas **desconectada** de `traduzir_lista()` até 2026-07-16 — todo texto novo ia direto pro Claude. Corrigido: `traduzir_lista()` agora tenta a camada gratuita por segmento antes de batchear o restante pro Claude.
 - **Importante (achado jurídico 2026-07-16):** os Termos do MyMemory proíbem republicar sua "Public Data" (segmentos crus) em outro repositório. Por isso, **só traduções geradas pelo Claude são contribuídas ao dicionário colaborativo público** — traduções do MyMemory/LibreTranslate são usadas apenas no resultado do próprio usuário, nunca enviadas pra `contribute_dictionary()`. Ver `Políticas/politica_de_privacidade.md` seção 1.3 e `Políticas/politica_do_dicionario.md` seção 2.
+- **Achado jurídico 2026-08-05 (revisão de licenças de terceiros, pedida pelo advogado):** três dependências empacotadas no executável distribuído tinham licença copyleft forte, incompatível com o `LICENSE` MIT do repositório: `ndspy` (GPLv3+), `PyMuPDF`/fitz (AGPLv3) e `EbookLib` (AGPLv3).
+  - `ndspy` **removido** — substituído por `parsear_nds_rom`/`remontar_nds_rom`, implementação própria a partir da especificação pública do formato .nds, testada e validada byte-a-byte contra o ndspy. Bônus: corrigiu um bug latente — `rom.filenames` do ndspy não era um dict de verdade e não suportava `.items()`, então a travessia de pastas em `processar_nds` provavelmente sempre falhava silenciosamente e caía no fallback binário.
+  - `PyMuPDF`/fitz **removido** — substituído por `pdf2image` (MIT), que invoca o Poppler como processo externo (mesmo padrão do FFmpeg/Tesseract: instalado separadamente pelo usuário, nunca embutido no binário). Novo pré-requisito de instalação: Poppler (ver README).
+  - `EbookLib` **removido** — substituído por leitura/escrita de EPUB própria em `processar_epub()`, usando só `zipfile` (stdlib) + `BeautifulSoup` (MIT, já dependência). Testado contra o EbookLib como referência: hierarquia de manifesto OPF, texto traduzido, imagens/CSS binários intactos byte-a-byte. Bônus: corrigiu dois bugs latentes de parsing — a declaração `<?xml ...?>` e o `<!DOCTYPE html>` vazavam como "texto" pro BeautifulSoup (via `html.parser`) e eram mandados pra tradução à toa; agora são filtrados corretamente.
+  - **As três dependências copyleft foram removidas.** O `LICENSE` MIT do repositório volta a ser preciso para o binário distribuído.
 - Pastas com espaço precisam de aspas nos comandos PowerShell
 - Chave Anthropic começa com sk-ant-, 108 caracteres
 - GITHUB_TOKEN nunca vai pro código — só no .env
 - LZ10/LZ11 só é descomprimido dentro de processar_nds() — NUNCA em processar_binario() para evitar corrupção
 - O algoritmo de validação/contribuição ao dicionário é o principal diferencial competitivo — não detalhar publicamente
 - Tesseract instalado em: C:\Program Files\Tesseract-OCR\tesseract.exe
+- Poppler precisa estar no PATH (`pdftoppm`) para o fallback de OCR de PDF escaneado funcionar — sem ele, `processar_pdf` só loga um aviso e segue sem OCR nessa página
 - Fontes usadas no PDF: C:\Windows\Fonts\arial.ttf
 
 ## Preferências do Dev

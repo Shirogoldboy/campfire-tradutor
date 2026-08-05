@@ -36,6 +36,7 @@ Baixe o instalador na aba [Releases](https://github.com/Shirogoldboy/campfire-tr
 - [Python 3.x](https://python.org/downloads)
 - [FFmpeg](https://ffmpeg.org/download.html) (para áudio/vídeo)
 - [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) (para PDFs escaneados)
+- [Poppler](https://github.com/oschwartz10612/poppler-windows/releases) (para renderizar páginas de PDFs escaneados antes do OCR — adicione a pasta `Library\bin` ao PATH)
 
 ### Como usar
 1. Instale o `Campfire Tradutor Setup 1.0.0.exe`
@@ -100,7 +101,7 @@ campfire projeto/
 **Mobile:** Expo · React Native · EAS Build  
 **IA:** Anthropic Claude (Haiku) · faster-whisper · Tesseract OCR · Claude Vision  
 **Tradução gratuita:** MyMemory · LibreTranslate  
-**Formatos Nintendo:** ndspy · NARC · BMG · MSBT · SARC · LZ10/LZ11
+**Formatos Nintendo:** NARC · BMG · MSBT · SARC · LZ10/LZ11 (parsers próprios)
 
 ---
 

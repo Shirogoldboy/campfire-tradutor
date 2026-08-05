@@ -4,6 +4,7 @@ import re
 import json
 import csv
 import io
+import struct
 import subprocess
 import tempfile
 import hashlib
@@ -581,23 +582,20 @@ def processar_pdf(caminho):
         print(f"📷 {len(paginas_sem_texto)} página(s) escaneada(s). Usando Tesseract OCR...", flush=True)
         try:
             import pytesseract
-            from PIL import Image as PILImage
-            import fitz  # PyMuPDF
+            from pdf2image import convert_from_path
 
             pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-            doc_fitz = fitz.open(caminho)
 
             for i in paginas_sem_texto:
-                page = doc_fitz[i]
-                pix = page.get_pixmap(dpi=200)
-                img = PILImage.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                texto_ocr = pytesseract.image_to_string(img, lang='por+eng+jpn')
+                imagens = convert_from_path(caminho, dpi=200, first_page=i + 1, last_page=i + 1)
+                if not imagens:
+                    continue
+                texto_ocr = pytesseract.image_to_string(imagens[0], lang='por+eng+jpn')
                 if texto_ocr.strip():
                     paginas[i] = texto_ocr
                     print(f"  OCR página {i+1}: {len(texto_ocr)} caracteres extraídos.", flush=True)
-            doc_fitz.close()
         except Exception as e:
-            print(f"⚠️ Tesseract falhou: {e}", flush=True)
+            print(f"⚠️ OCR falhou (verifique se Poppler e Tesseract estão instalados): {e}", flush=True)
 
     indices = [i for i, t in enumerate(paginas) if t.strip()]
     amostra = ' '.join(paginas[i] for i in indices[:3])
@@ -677,18 +675,58 @@ def processar_video(caminho):
     return conteudo, '.srt'
 
 def processar_epub(caminho):
-    import ebooklib
-    from ebooklib import epub
-    from bs4 import BeautifulSoup, Comment
+    """
+    Lê/escreve EPUB sem EbookLib (licença AGPLv3, incompatível com o MIT do
+    projeto). EPUB é só um ZIP com um manifesto XML (OPF) apontando pra
+    documentos XHTML — implementação própria em cima de zipfile (stdlib) e
+    BeautifulSoup (já usado no projeto), sem depender de nenhuma lib de
+    terceiros com licença copyleft.
+    """
+    import zipfile
+    import posixpath
+    import xml.etree.ElementTree as ET
+    from bs4 import BeautifulSoup, Comment, Doctype
 
-    book = epub.read_epub(caminho)
+    with zipfile.ZipFile(caminho, 'r') as zf:
+        nomes_originais = [n for n in zf.namelist() if not n.endswith('/')]
+        conteudos = {nome: zf.read(nome) for nome in nomes_originais}
+
+    container_xml = conteudos.get('META-INF/container.xml')
+    if not container_xml:
+        raise Exception("EPUB inválido: META-INF/container.xml não encontrado.")
+
+    container_root = ET.fromstring(container_xml)
+    rootfile = container_root.find('.//{*}rootfile')
+    opf_path = rootfile.get('full-path')
+    opf_dir = posixpath.dirname(opf_path)
+
+    opf_root = ET.fromstring(conteudos[opf_path])
+    manifest = opf_root.find('{*}manifest')
+
     TAGS_IGNORADAS = {'script', 'style'}
+    itens_traduziveis = []
+    for item in manifest.findall('{*}item'):
+        if item.get('media-type') == 'application/xhtml+xml':
+            href = item.get('href')
+            caminho_item = posixpath.normpath(posixpath.join(opf_dir, href)) if opf_dir else href
+            itens_traduziveis.append(caminho_item)
 
-    for item in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
-        soup = BeautifulSoup(item.get_content(), 'html.parser')
+    for caminho_item in itens_traduziveis:
+        if caminho_item not in conteudos:
+            continue
+
+        # Tira a declaração <?xml ...?> antes de parsear — o html.parser não
+        # entende essa instrução de processamento e a expõe como se fosse um
+        # nó de texto solto, o que faria ela ser mandada pra tradução à toa.
+        bruto = conteudos[caminho_item]
+        m_decl = re.match(rb'^\s*<\?xml[^>]*\?>\s*', bruto)
+        declaracao = m_decl.group(0) if m_decl else b''
+        corpo = bruto[len(declaracao):] if m_decl else bruto
+
+        soup = BeautifulSoup(corpo, 'html.parser')
         nodes = [
             n for n in soup.find_all(string=True)
-            if not isinstance(n, Comment) and n.parent.name not in TAGS_IGNORADAS and n.strip()
+            if not isinstance(n, (Comment, Doctype)) and n.parent.name not in TAGS_IGNORADAS and n.strip()
         ]
         if not nodes:
             continue
@@ -696,22 +734,20 @@ def processar_epub(caminho):
         textos = [str(n) for n in nodes]
         idioma_origem = detectar_idioma_texto(' '.join(textos[:20]))
         dict_key = get_dict_key(idioma_origem, _idioma_global)
-        print(f"📖 [{item.get_name()}] Idioma: {idioma_origem} → dicionário: {dict_key}", flush=True)
+        print(f"📖 [{caminho_item}] Idioma: {idioma_origem} → dicionário: {dict_key}", flush=True)
         traduzidos = traduzir_lista(textos, dict_key=dict_key)
 
         for node, trad in zip(nodes, traduzidos):
             node.replace_with(trad)
-        item.set_content(str(soup).encode('utf-8'))
+        conteudos[caminho_item] = declaracao + str(soup).encode('utf-8')
 
-    pasta = os.path.dirname(caminho)
-    nome_base = os.path.splitext(os.path.basename(caminho))[0]
-    temp_path = os.path.join(pasta, f"{nome_base}_epub_temp.epub")
-    epub.write_epub(temp_path, book)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as zf_out:
+        for nome in nomes_originais:
+            compressao = zipfile.ZIP_STORED if nome == 'mimetype' else zipfile.ZIP_DEFLATED
+            zf_out.writestr(nome, conteudos[nome], compress_type=compressao)
 
-    with open(temp_path, 'rb') as f:
-        conteudo = f.read()
-    os.remove(temp_path)
-    return conteudo, '.epub'
+    return buffer.getvalue(), '.epub'
 
 def processar_docx(caminho):
     from docx import Document
@@ -1329,7 +1365,7 @@ def processar_binario(caminho):
         data = bytearray(f.read())
 
     # ── SEM tentativa de descompressão aqui ──────────────────────────────────
-    # LZ só é descomprimido dentro de processar_nds via ndspy,
+    # LZ só é descomprimido dentro de processar_nds (via parsear_nds_rom),
     # que sabe remontar o arquivo corretamente.
     # Aqui fazemos varredura direta no binário original.
 
@@ -1877,28 +1913,106 @@ def processar_imagem(caminho):
     buf = _io.BytesIO()
     final.save(buf, format='PNG')
     return buf.getvalue(), '.png'
+# ─── CONTAINER .NDS (Nintendo DS ROM) ────────────────────────────────────────
+# Implementação própria a partir da especificação pública do formato (GBATEK),
+# substituindo o ndspy — cuja licença (GPLv3+) exigiria relicenciar o binário
+# distribuído. Só o container externo é reimplementado aqui; NARC, BMG e
+# LZ10/LZ11 continuam sendo os parsers próprios já existentes neste arquivo.
+
+def _crc16_modbus_nds(data: bytes) -> int:
+    """CRC16 padrão (variante MODBUS: poly 0xA001 refletido, init 0xFFFF), usado no header do .nds."""
+    crc = 0xFFFF
+    for b in data:
+        crc ^= b
+        for _ in range(8):
+            crc = (crc >> 1) ^ 0xA001 if crc & 1 else crc >> 1
+    return crc & 0xFFFF
+
+def parsear_nds_rom(data: bytes) -> tuple:
+    """Lê o header, a FAT (File Allocation Table) e a FNT (File Name Table) do container .nds."""
+    fnt_offset = struct.unpack_from('<I', data, 0x40)[0]
+    fat_offset = struct.unpack_from('<I', data, 0x48)[0]
+    fat_size   = struct.unpack_from('<I', data, 0x4C)[0]
+
+    fat = [struct.unpack_from('<II', data, fat_offset + i * 8) for i in range(fat_size // 8)]
+    files = [bytes(data[s:e]) for s, e in fat]
+
+    def ler_subtable(subtable_offset, first_file_id):
+        pasta, pos, file_id = {}, fnt_offset + subtable_offset, first_file_id
+        while True:
+            tipo_tam = data[pos]; pos += 1
+            if tipo_tam == 0:
+                break
+            eh_pasta = bool(tipo_tam & 0x80)
+            tam_nome = tipo_tam & 0x7F
+            nome = data[pos:pos + tam_nome].decode('shift_jis', errors='replace')
+            pos += tam_nome
+            if eh_pasta:
+                sub_dir_id = struct.unpack_from('<H', data, pos)[0]; pos += 2
+                sub_entry_off = fnt_offset + (sub_dir_id & 0xFFF) * 8
+                sub_subtable_off, sub_first_id = struct.unpack_from('<IH', data, sub_entry_off)
+                pasta[nome] = ler_subtable(sub_subtable_off, sub_first_id)
+            else:
+                pasta[nome] = file_id
+                file_id += 1
+        return pasta
+
+    root_subtable_off, root_first_id = struct.unpack_from('<IH', data, fnt_offset)
+    filenames = ler_subtable(root_subtable_off, root_first_id)
+    return files, filenames
+
+def remontar_nds_rom(original: bytes, novos_arquivos: list) -> bytes:
+    """Reconstrói o .nds com novos dados de arquivo (podendo mudar de tamanho), recalculando a FAT e o checksum do header."""
+    fat_offset = struct.unpack_from('<I', original, 0x48)[0]
+    fat_size   = struct.unpack_from('<I', original, 0x4C)[0]
+    n_entries  = fat_size // 8
+
+    fat_original = [struct.unpack_from('<II', original, fat_offset + i * 8) for i in range(n_entries)]
+    # Tudo antes do menor offset da FAT original (header, arm9/arm7, FNT, FAT,
+    # overlays, banner) é preservado como está — só a FAT é reescrita in-place.
+    prefixo_fim = min(s for s, e in fat_original)
+    novo = bytearray(original[:prefixo_fim])
+
+    dados_arquivos, novas_entradas = bytearray(), []
+    for arq in novos_arquivos:
+        inicio = prefixo_fim + len(dados_arquivos)
+        dados_arquivos += arq
+        fim = prefixo_fim + len(dados_arquivos)
+        novas_entradas.append((inicio, fim))
+        while len(dados_arquivos) % 4 != 0:
+            dados_arquivos += b'\xff'
+
+    for i, (s, e) in enumerate(novas_entradas):
+        struct.pack_into('<II', novo, fat_offset + i * 8, s, e)
+
+    rom_final = bytearray(bytes(novo) + bytes(dados_arquivos))
+    struct.pack_into('<I', rom_final, 0x80, len(rom_final))
+    struct.pack_into('<H', rom_final, 0x15E, _crc16_modbus_nds(bytes(rom_final[:0x15E])))
+    return bytes(rom_final)
+
 # ─── FORMATOS NINTENDO ────────────────────────────────────────────────────────
 
 def processar_nds(caminho):
     """NDS com suporte a NARC, BMG, LZ10/LZ11 e varredura binária."""
     try:
-        import ndspy.rom
-        print("Abrindo ROM Nintendo DS com ndspy...", flush=True)
-        rom = ndspy.rom.NintendoDSRom.fromFile(caminho)
+        with open(caminho, 'rb') as f:
+            rom_original = f.read()
+        print("Abrindo ROM Nintendo DS...", flush=True)
+        files, filenames = parsear_nds_rom(rom_original)
 
         nome_por_indice = {}
         def _caminhar(fs, prefix=''):
             for nome, conteudo in fs.items():
                 if isinstance(conteudo, dict): _caminhar(conteudo, prefix+nome+'/')
                 else: nome_por_indice[conteudo] = prefix+nome
-        if rom.filenames: _caminhar(rom.filenames)
+        if filenames: _caminhar(filenames)
 
-        print(f"ROM: {len(rom.files)} arquivo(s) no filesystem.", flush=True)
+        print(f"ROM: {len(files)} arquivo(s) no filesystem.", flush=True)
         EXTS_NDS = {'', '.bin', '.dat', '.msg', '.txt', '.arc', '.narc', '.bmg', '.mtx'}
         dict_key = get_dict_key('ja', _idioma_global)
         traduzidos_count = 0
 
-        for idx, dados in enumerate(rom.files):
+        for idx, dados in enumerate(files):
             if not dados or len(dados) < 8: continue
             nome = nome_por_indice.get(idx, f'file_{idx:04d}.bin')
             ext  = os.path.splitext(nome)[1].lower()
@@ -1933,7 +2047,7 @@ def processar_nds(caminho):
                         finally:
                             if os.path.exists(tmp): os.remove(tmp)
                 if mod:
-                    rom.files[idx] = remontar_narc(dw, novos)
+                    files[idx] = remontar_narc(dw, novos)
                     traduzidos_count += 1
                     print(f"NARC traduzido: {nome}", flush=True)
                 continue
@@ -1946,7 +2060,7 @@ def processar_nds(caminho):
                 if sf:
                     trad = traduzir_lista(sf, "Texto Nintendo DS. Conciso.", dict_key=dict_key)
                     mapa = {o:t for o,t in zip(sf,trad)}
-                    rom.files[idx] = remontar_bmg(dw, [mapa.get(s,s) for s in strings])
+                    files[idx] = remontar_bmg(dw, [mapa.get(s,s) for s in strings])
                     traduzidos_count += 1
                     print(f"BMG traduzido: {nome}", flush=True)
                 continue
@@ -1957,20 +2071,17 @@ def processar_nds(caminho):
             try:
                 novo, _ = processar_binario(tmp)
                 if novo != dw:
-                    rom.files[idx] = novo; traduzidos_count += 1
+                    files[idx] = novo; traduzidos_count += 1
                     print(f"Binário traduzido: {nome}", flush=True)
             except Exception: pass
             finally:
                 if os.path.exists(tmp): os.remove(tmp)
 
         print(f"Total NDS: {traduzidos_count} arquivo(s) traduzido(s).", flush=True)
-        return bytes(rom.save()), '.nds'
+        return remontar_nds_rom(rom_original, files), '.nds'
 
-    except ImportError:
-        print("ndspy não instalado. Varredura binária...", flush=True)
-        return processar_binario(caminho)
     except Exception as e:
-        print(f"Erro ndspy ({e}). Varredura binária...", flush=True)
+        print(f"Erro ao processar NDS ({e}). Varredura binária...", flush=True)
         return processar_binario(caminho)
 
 
