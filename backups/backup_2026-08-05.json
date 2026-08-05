@@ -4,7 +4,7 @@
     "python": 3,
     "javascript_react": 8,
     "mobile": 7,
-    "total": 111
+    "total": 113
   },
   "modulos": {
     "desktop": "Electron + React + Vite + Python",
