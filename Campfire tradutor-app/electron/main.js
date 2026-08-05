@@ -62,6 +62,19 @@ ipcMain.handle('save-api-key', (_, key) => {
   return true
 })
 
+// ── Contribuição ao dicionário colaborativo (padrão: ativado) ──────────────
+ipcMain.handle('load-contribuir-dicionario', () => {
+  const config = lerConfig()
+  return config.contribuirDicionario !== false
+})
+
+ipcMain.handle('save-contribuir-dicionario', (_, valor) => {
+  const config = lerConfig()
+  config.contribuirDicionario = valor
+  salvarConfig(config)
+  return true
+})
+
 ipcMain.handle('open-url', (_, url) => shell.openExternal(url))
 
 ipcMain.handle('select-file', async (_, exts) => {
@@ -94,7 +107,9 @@ ipcMain.handle('select-folder', async () => {
 })
 
 ipcMain.handle('traduzir', (event, caminho, idioma) => {
-  const apiKey = lerConfig().apiKey || ''
+  const config = lerConfig()
+  const apiKey = config.apiKey || ''
+  const contribuirDicionario = config.contribuirDicionario !== false ? '1' : '0'
   const pPath  = progressPath(caminho, idioma)
 
   return new Promise((resolve, reject) => {
@@ -103,10 +118,10 @@ ipcMain.handle('traduzir', (event, caminho, idioma) => {
 
     if (app.isPackaged) {
       const exePath = path.join(process.resourcesPath, 'python_dist', 'tradutor', 'tradutor.exe')
-      processo = spawn(exePath, [caminho, idioma, apiKey])
+      processo = spawn(exePath, [caminho, idioma, apiKey, contribuirDicionario])
     } else {
       const scriptPath = path.join(__dirname, '..', 'tradutor.py')
-      processo = spawn('python', [scriptPath, caminho, idioma, apiKey])
+      processo = spawn('python', [scriptPath, caminho, idioma, apiKey, contribuirDicionario])
     }
 
     processo.stdout.on('data', (data) => {

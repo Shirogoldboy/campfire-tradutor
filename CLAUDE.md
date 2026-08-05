@@ -152,7 +152,7 @@ pdfjs-dist, expo-build-properties
 - [x] Suporte a XLSX/planilhas (openpyxl) — `processar_xlsx()` em tradutor.py
 - [x] Suporte a arquivos i18n (.po, .strings, .resx) — `processar_po()`, `processar_strings()`, `processar_resx()`
 - [ ] Play Store (R$130 taxa única — requer 12 testadores por 14 dias) — pagamento e conta de dev ficam por conta do Caio
-- [ ] Adicionar opção no Setup pra desativar a contribuição automática ao dicionário colaborativo (recomendação do advogado — dá ao usuário controle sobre o que é compartilhado)
+- [x] Opção no Setup pra desativar a contribuição automática ao dicionário colaborativo (2026-08-05) — checkbox em `Setup.jsx`, config `contribuirDicionario` em `main.js`, flag `_contribuir_dicionario` em `tradutor.py` (4º argumento de CLI)
 
 ### Fase Jurídica — acompanhamento com o advogado (Caio's mãe)
 Estrutura por Etapas do 2º parecer jurídico (2026-07-16), que refina o plano de fases anterior.

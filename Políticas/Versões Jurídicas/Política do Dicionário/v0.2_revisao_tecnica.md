@@ -40,10 +40,9 @@ Um par de tradução pode deixar de ser incluído (ou ser removido após inclus�
   [Aviso de Direitos Autorais](aviso_direitos_autorais.md);
 - É reportado como incorreto e a correção justifica a remoção (ver Seção 7).
 
-Atualmente o Aplicativo **não oferece** ao usuário uma opção para desativar a contribuição
-automática ao dicionário. [Recomendação: considerar adicionar esse controle no Setup antes do
-lançamento na Play Store — mesmo sem dados pessoais envolvidos, dar ao usuário controle sobre o
-que é compartilhado tende a ser bem visto tanto pela LGPD quanto pela revisão da própria loja.]
+Você pode desativar essa contribuição automática a qualquer momento na tela de configuração do
+Aplicativo (Setup → "Dicionário Colaborativo"). A preferência é salva localmente no seu
+dispositivo e vale para todas as traduções futuras enquanto estiver desativada.
 
 ## 4. Natureza pública dos dados e propriedade das contribuições
 

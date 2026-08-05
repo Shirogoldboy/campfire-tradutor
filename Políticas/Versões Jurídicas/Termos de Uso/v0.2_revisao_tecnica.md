@@ -13,7 +13,7 @@ Preencha os campos entre [colchetes] antes de publicar oficialmente.
 Ao instalar, acessar ou usar o Campfire Tradutor ("o Aplicativo"), você concorda com estes
 Termos de Uso. Se você não concorda com algum destes termos, não utilize o Aplicativo.
 
-O Campfire Tradutor é desenvolvido e mantido por Caio [SOBRENOME — CONFIRMAR], pessoa física,
+O Campfire Tradutor é desenvolvido e mantido por Caio Fabiano da Silva Costa, pessoa física,
 doravante "Desenvolvedor", com contato em caiofabianodbz2@gmail.com.
 
 ## 2. Descrição do Serviço
@@ -138,9 +138,9 @@ do Aplicativo após uma atualização implica aceitação dos novos termos.
 
 ## 12. Lei Aplicável
 
-Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro de
-[cidade/comarca — CONFIRMAR] para dirimir quaisquer controvérsias, salvo disposição legal em
-contrário.
+Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro da
+comarca do Cabo de Santo Agostinho/PE para dirimir quaisquer controvérsias, salvo disposição legal
+em contrário.
 
 ## 13. Contato
 

@@ -4,10 +4,10 @@ title: EULA — Campfire Tradutor
 
 # Contrato de Licença de Usuário Final (EULA) — Campfire Tradutor
 
-**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
+**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 Este Contrato de Licença de Usuário Final ("EULA") é um acordo legal entre você (pessoa física ou
-jurídica) e Caio [SOBRENOME — CONFIRMAR], pessoa física ("Licenciante") para o uso do software
+jurídica) e Caio Fabiano da Silva Costa, pessoa física ("Licenciante") para o uso do software
 Campfire Tradutor ("o Software"), incluindo suas versões para Windows (desktop) e Android (mobile).
 
 Ao instalar ou usar o Software, você concorda com os termos deste EULA. Se não concordar, não
@@ -111,8 +111,8 @@ ou alteração de serviços de terceiros integrados (Seção 5). Ver também os 
 
 ## 11. Lei Aplicável
 
-Este EULA é regido pelas leis da República Federativa do Brasil, com foro eleito em [cidade/comarca
-— CONFIRMAR].
+Este EULA é regido pelas leis da República Federativa do Brasil, com foro eleito na comarca do
+Cabo de Santo Agostinho/PE.
 
 ## 12. Contato
 

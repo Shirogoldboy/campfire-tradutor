@@ -34,6 +34,7 @@ MIN_LEN_BINARIO = 4
 MAX_TAMANHO_ISO_ARQUIVO = 10_000_000
 
 client = None
+_contribuir_dicionario = True
 
 def inicializar_cliente(api_key=None):
     global client
@@ -461,7 +462,7 @@ def traduzir_lista(textos, instrucao_extra="", dict_key=None):
     # repositório (ver Termos do MyMemory). Por isso traduções gratuitas
     # (MyMemory/LibreTranslate) são usadas no resultado do usuário mas NUNCA
     # contribuídas ao dicionário público — só as geradas pelo próprio Claude.
-    if dict_key and indices_para_claude:
+    if dict_key and indices_para_claude and _contribuir_dicionario:
         def contribuir_claude():
             novas = {}
             for local_i, pos in enumerate(indices_para_claude):
@@ -2240,6 +2241,7 @@ if __name__ == '__main__':
     caminho = sys.argv[1]
     _idioma_global = sys.argv[2] if len(sys.argv) > 2 else "português brasileiro coloquial"
     api_key = sys.argv[3] if len(sys.argv) > 3 else None
+    _contribuir_dicionario = sys.argv[4] != '0' if len(sys.argv) > 4 else True
 
     inicializar_cliente(api_key)
     print(f"Idioma alvo: {_idioma_global}", flush=True)

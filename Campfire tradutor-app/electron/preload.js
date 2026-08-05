@@ -13,4 +13,7 @@ contextBridge.exposeInMainWorld('api', {
   // ── Progresso de tradução ──────────────────────────────────────────────────
   checkProgress: (caminho, idioma) => ipcRenderer.invoke('check-progress', caminho, idioma),
   clearProgress: (caminho, idioma) => ipcRenderer.invoke('clear-progress', caminho, idioma),
+  // ── Contribuição ao dicionário colaborativo ────────────────────────────────
+  loadContribuirDicionario: () => ipcRenderer.invoke('load-contribuir-dicionario'),
+  saveContribuirDicionario: (valor) => ipcRenderer.invoke('save-contribuir-dicionario', valor),
 })

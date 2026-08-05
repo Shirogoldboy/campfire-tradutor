@@ -6,11 +6,19 @@ export default function Setup({ onPronto }) {
   const [apiKeySalva, setApiKeySalva] = useState(null)
   const [salvando, setSalvando] = useState(false)
   const [mostrarGuia, setMostrarGuia] = useState(false)
+  const [contribuirDicionario, setContribuirDicionario] = useState(true)
 
   useEffect(() => {
     window.api.checkDeps().then(setDeps)
     window.api.loadApiKey().then(k => { if (k) setApiKeySalva(k) })
+    window.api.loadContribuirDicionario().then(setContribuirDicionario)
   }, [])
+
+  function alternarContribuicao() {
+    const novoValor = !contribuirDicionario
+    setContribuirDicionario(novoValor)
+    window.api.saveContribuirDicionario(novoValor)
+  }
 
   const depsFaltando = deps && (!deps.python || !deps.ffmpeg)
   const tudoOk = deps?.python && deps?.ffmpeg && apiKeySalva
@@ -87,6 +95,24 @@ export default function Setup({ onPronto }) {
         )}
       </div>
 
+      <div style={s.card}>
+        <p style={s.cardTitulo}>3. Dicionário Colaborativo</p>
+        <label style={s.toggleRow}>
+          <input
+            type="checkbox"
+            checked={contribuirDicionario}
+            onChange={alternarContribuicao}
+            style={s.checkbox}
+          />
+          <span>Contribuir traduções ao dicionário público (recomendado)</span>
+        </label>
+        <p style={s.info}>
+          Quando ativado, traduções feitas pelo Claude são publicadas de forma anônima em um
+          dicionário público de código aberto, ajudando a reduzir o custo de tradução para toda a
+          comunidade. Você pode desativar a qualquer momento.
+        </p>
+      </div>
+
       {depsFaltando && (
         <p style={s.erro}>Instale as dependências faltantes e reinicie o app.</p>
       )}
@@ -126,4 +152,6 @@ const s = {
   btnTrocaKey: { background: 'none', border: '1px solid #555', color: '#aaa', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontSize: 12 },
   btnEntrar: { padding: '12px 36px', background: '#f90', border: 'none', borderRadius: 8, fontSize: 16, cursor: 'pointer', color: '#000', fontWeight: 'bold', marginTop: 8 },
   erro: { color: '#f55', fontSize: 13 },
+  toggleRow: { display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, cursor: 'pointer', marginBottom: 8 },
+  checkbox: { width: 16, height: 16, cursor: 'pointer' },
 }
