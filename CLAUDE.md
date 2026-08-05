@@ -172,7 +172,7 @@ versões (v0.1 Rascunho → v0.2 Revisão Técnica → v0.3 Revisão Jurídica �
 - [ ] Etapa 10 — Busca oficial de anterioridade da marca "Campfire Tradutor" no INPI
 - [ ] Etapa 11 — Pedido de registro da marca no INPI (~R$355)
 - [ ] Etapa 12 — Registro do programa de computador no INPI (~R$80)
-- [ ] Preencher campos pendentes em todos os documentos: sobrenome completo do Caio, cidade/comarca (foro)
+- [x] Nome completo (Caio Fabiano da Silva Costa), foro (Cabo de Santo Agostinho/PE) e modelo de negócio (freemium — EULA Seção 2) confirmados em 2026-08-05
 - [ ] Publicar via GitHub Pages (`docs/` já preparado — falta habilitar Settings → Pages e confirmar antes de ir ao ar)
 - [ ] Conformidade contínua: revisar termos das APIs de terceiros sempre que mudarem; revisar os documentos a cada nova funcionalidade relevante; atualizar antes de cada publicação (Play Store, novo domínio, etc.)
 

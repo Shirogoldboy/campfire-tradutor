@@ -28,10 +28,15 @@ EULA.
 
 ## 2. Concessão de Licença
 
-Sujeito aos termos deste EULA, o Licenciante concede a você uma licença [gratuita — CONFIRMAR
-modelo de negócio, ex: freemium], pessoal, não exclusiva, intransferível e revogável para instalar
-e usar o Software **oficialmente distribuído** em dispositivos de sua propriedade ou controle,
-exclusivamente para os fins descritos na documentação do Software.
+Sujeito aos termos deste EULA, o Licenciante concede a você uma licença gratuita, pessoal, não
+exclusiva, intransferível e revogável para instalar e usar o Software **oficialmente distribuído**
+em dispositivos de sua propriedade ou controle, exclusivamente para os fins descritos na
+documentação do Software.
+
+O Licenciante poderá, no futuro, introduzir funcionalidades ou serviços adicionais pagos (modelo
+freemium) — por exemplo, um servidor próprio opcional. Nesse caso, os termos aplicáveis a essas
+novas funcionalidades pagas serão informados previamente e não afetarão retroativamente o uso das
+funcionalidades gratuitas já disponibilizadas até então.
 
 ## 3. Relação com o Código-Fonte Aberto (Licença MIT)
 
