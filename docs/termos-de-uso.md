@@ -4,7 +4,7 @@ title: Termos de Uso — Campfire Tradutor
 
 # Termos de Uso — Campfire Tradutor
 
-**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
+**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 ## 1. Aceitação dos Termos
 
@@ -129,18 +129,37 @@ terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate, Hugging
 Recomenda-se **sempre manter backup** dos arquivos originais antes de traduzi-los, especialmente
 arquivos binários de jogos e ROMs.
 
-## 11. Alterações nos Termos
+## 11. Controle de Exportação
+
+Considerando que o Aplicativo pode utilizar, por meio da chave de API fornecida pelo próprio
+usuário, tecnologia de inteligência artificial de provedores internacionais (ex: Anthropic), você
+declara que seu uso do Aplicativo — incluindo o conteúdo submetido para tradução — observará a
+legislação brasileira aplicável, bem como eventuais sanções internacionais e regras de controle de
+exportação de tecnologia que possam ser pertinentes ao seu caso concreto. O Desenvolvedor não
+realiza qualquer triagem de destinatários, países ou finalidades de uso, sendo tal responsabilidade
+exclusiva do usuário.
+
+## 12. Uso por Pessoas Jurídicas (Uso Empresarial)
+
+O Aplicativo pode ser utilizado por pessoas jurídicas e por seus colaboradores. Nesse caso, a
+empresa usuária é responsável pela conformidade interna quanto ao uso do Aplicativo por seus
+funcionários e colaboradores, bem como pelo conteúdo submetido à tradução, incluindo eventuais
+informações confidenciais, sigilosas ou protegidas por direitos de terceiros contidas nos arquivos
+traduzidos. Cabe à empresa usuária adotar suas próprias políticas internas quanto ao uso de
+ferramentas de tradução e de inteligência artificial, conforme aplicável.
+
+## 13. Alterações nos Termos
 
 O Desenvolvedor pode atualizar estes Termos periodicamente. A versão vigente estará sempre
 disponível em https://shirogoldboy.github.io/campfire-tradutor/termos-de-uso. O uso continuado
 do Aplicativo após uma atualização implica aceitação dos novos termos.
 
-## 12. Lei Aplicável
+## 14. Lei Aplicável
 
-Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro da
-comarca do Cabo de Santo Agostinho/PE para dirimir quaisquer controvérsias, salvo disposição legal
+Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica com foro eleito na
+comarca do Cabo de Santo Agostinho/PE, para dirimir quaisquer controvérsias, salvo disposição legal
 em contrário.
 
-## 13. Contato
+## 15. Contato
 
 Dúvidas sobre estes Termos: caiofabianodbz2@gmail.com.

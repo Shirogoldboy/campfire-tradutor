@@ -4,7 +4,7 @@ title: Política de Privacidade — Campfire Tradutor
 
 # Política de Privacidade — Campfire Tradutor
 
-**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
+**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon Entertainment"
@@ -91,6 +91,10 @@ funcionalidade específica que você aciona:
 - Não exigimos cadastro, login ou conta de usuário;
 - Não usamos os arquivos que você traduz para treinar modelos próprios;
 - Não coletamos dados de navegação ou publicidade de terceiros dentro do Aplicativo.
+
+Atualmente, o Aplicativo não utiliza SDKs de rastreamento ou de análise comportamental
+(analytics); caso isso venha a ser implementado no futuro, esta Política será atualizada antes
+da entrada em operação da nova funcionalidade.
 
 ## 3. Transferência Internacional de Dados
 

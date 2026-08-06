@@ -4,7 +4,7 @@ title: Política do Dicionário Colaborativo — Campfire Tradutor
 
 # Política do Dicionário Colaborativo — Campfire Tradutor
 
-**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
+**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 ## 1. O que é
 
