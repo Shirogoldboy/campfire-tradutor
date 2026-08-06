@@ -174,7 +174,7 @@ versões (v0.1 Rascunho → v0.2 Revisão Técnica → v0.3 Revisão Jurídica �
 - [ ] Etapa 12 — Registro do programa de computador no INPI (~R$80)
 - [x] Nome completo (Caio Fabiano da Silva Costa), foro (Cabo de Santo Agostinho/PE) e modelo de negócio (freemium — EULA Seção 2) confirmados em 2026-08-05
 - [x] Marca "AlienRaccoon Entertainment" adicionada em 2026-08-06 nos parágrafos de identificação do Desenvolvedor (Termos, EULA, Privacidade) — "Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca [...]". Como isso toca o texto da EULA já revisada (v0.3) pela advogada, vale avisá-la dessa mudança específica antes da assinatura final, mesmo sem alterar a parte contratante.
-- [ ] Publicar via GitHub Pages (`docs/` já preparado — falta habilitar Settings → Pages e confirmar antes de ir ao ar)
+- [x] **GitHub Pages no ar** (habilitado e confirmado em 2026-08-06, com autorização do Caio): `https://shirogoldboy.github.io/campfire-tradutor/` — os 5 documentos acessíveis (`/termos-de-uso`, `/eula`, `/politica-de-privacidade`, `/politica-do-dicionario`, `/aviso-direitos-autorais`). Nota técnica: o build automático às vezes fica "preso" em deployments cancelados quando dois pushes seguidos chegam rápido demais — se o site não atualizar sozinho em alguns minutos após um push, disparar manualmente com `gh api repos/Shirogoldboy/campfire-tradutor/pages/builds -X POST` resolve.
 - [ ] Conformidade contínua: revisar termos das APIs de terceiros sempre que mudarem; revisar os documentos a cada nova funcionalidade relevante; atualizar antes de cada publicação (Play Store, novo domínio, etc.)
 
 ### Médio prazo (produto)
