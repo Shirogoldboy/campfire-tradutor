@@ -1,0 +1,25 @@
+# Dependências do servidor Campfire pra deploy em nuvem (Render, CAMPFIRE_CLOUD_MODE=1).
+# Escopo restrito a .zip/.rar (único modo que o app mobile usa via servidor) —
+# por isso NÃO inclui faster-whisper (pesado, usado só por áudio/vídeo,
+# removido de tradutor.EXTENSOES quando CAMPFIRE_CLOUD_MODE=1).
+
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+requests
+anthropic
+langdetect
+rarfile
+
+# Formatos que podem aparecer dentro de um .zip/.rar
+python-docx
+openpyxl
+polib
+beautifulsoup4
+Pillow
+pdfplumber
+pdf2image
+fpdf2
+pytesseract
+pycdlib

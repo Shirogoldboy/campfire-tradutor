@@ -584,7 +584,9 @@ def processar_pdf(caminho):
             import pytesseract
             from pdf2image import convert_from_path
 
-            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+            if sys.platform == 'win32':
+                pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+            # Linux/mac: usa o 'tesseract' do PATH (instalado via apt/brew)
 
             for i in paginas_sem_texto:
                 imagens = convert_from_path(caminho, dpi=200, first_page=i + 1, last_page=i + 1)
@@ -1693,7 +1695,12 @@ def processar_zip(caminho):
 
     print(f"ZIP concluído: {traduzidos_count} traduzido(s), {ignorados} ignorado(s).", flush=True)
     print(f"Arquivos salvos em: {pasta_saida}", flush=True)
-    return b'', '.zip_done'
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf_saida:
+        for nome_arquivo in os.listdir(pasta_saida):
+            zf_saida.write(os.path.join(pasta_saida, nome_arquivo), arcname=nome_arquivo)
+    return buffer.getvalue(), '.zip'
 
 def processar_rar(caminho):
     import rarfile
@@ -1744,7 +1751,13 @@ def processar_rar(caminho):
 
     print(f"RAR concluído: {traduzidos_count} traduzido(s), {ignorados} ignorado(s).", flush=True)
     print(f"Arquivos salvos em: {pasta_saida}", flush=True)
-    return b'', '.rar_done'
+
+    import zipfile
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf_saida:
+        for nome_arquivo in os.listdir(pasta_saida):
+            zf_saida.write(os.path.join(pasta_saida, nome_arquivo), arcname=nome_arquivo)
+    return buffer.getvalue(), '.zip'
 
 # ─── IMAGENS / PAINÉIS ───────────────────────────────────────────────────────
 

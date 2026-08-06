@@ -4,13 +4,14 @@ import re
 import json
 import time
 import base64
+import shutil
 import tempfile
 import socket
 import threading
 import uvicorn
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Header, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 
 # ─── Carrega variáveis do .env ───────────────────────────────────────────────
@@ -19,13 +20,33 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 GITHUB_REPO  = os.getenv("GITHUB_REPO", "Shirogoldboy/campfire-dictionary")
 GITHUB_API   = "https://api.github.com"
 
+# ─── unrar-free no Linux (imagem cloud) ──────────────────────────────────────
+# No Windows local o rarfile já encontra o unrar.exe normalmente. No container
+# Linux instalamos o pacote livre "unrar-free" (apt), cujo binário tem esse
+# mesmo nome — apontamos o rarfile pra ele quando disponível.
+try:
+    import rarfile as _rarfile
+    if shutil.which("unrar-free"):
+        _rarfile.UNRAR_TOOL = "unrar-free"
+except ImportError:
+    pass
+
+# ─── Modo cloud (deploy público, ex: Render) ─────────────────────────────────
+# Local (padrão): serve todos os formatos, sem exigir chave de acesso.
+# Cloud (CAMPFIRE_CLOUD_MODE=1): só ZIP/RAR (único modo que o app mobile usa
+# hoje via servidor), sem áudio/vídeo dentro dos compactados (evita travar o
+# free tier com Whisper) e exige header X-Campfire-Key quando configurada.
+CAMPFIRE_CLOUD_MODE = os.getenv("CAMPFIRE_CLOUD_MODE") == "1"
+CAMPFIRE_ACCESS_KEY = os.getenv("CAMPFIRE_ACCESS_KEY", "")
+
 # Debug temporário
 print(f"🔑 Token carregado: {'✅ SIM' if GITHUB_TOKEN else '❌ NÃO'}")
 print(f"📦 Repo: {GITHUB_REPO}")
+print(f"☁️ Modo cloud: {'✅ SIM' if CAMPFIRE_CLOUD_MODE else '❌ NÃO (local)'}")
 
 app = FastAPI()
 
-MOBILE_EXTENSOES = {
+MOBILE_EXTENSOES = {'.zip', '.rar'} if CAMPFIRE_CLOUD_MODE else {
     '.txt', '.srt', '.json', '.xml', '.csv',
     '.pdf', '.mkv', '.mp4', '.mp3', '.epub',
     '.zip', '.rar'
@@ -33,6 +54,11 @@ MOBILE_EXTENSOES = {
 
 # Formatos que obrigatoriamente precisam do Claude
 EXIGE_CLAUDE = {'.pdf', '.mkv', '.mp4', '.mp3', '.epub', '.zip', '.rar'}
+
+# Formatos pesados demais pro free tier — só relevante em modo cloud, onde
+# são removidos de tradutor.EXTENSOES pra que arquivos desses tipos dentro de
+# um .zip/.rar sejam simplesmente ignorados, em vez de tentar rodar Whisper.
+FORMATOS_PESADOS_CLOUD = ('.mkv', '.mp4', '.mp3')
 
 # ─── Cache do dicionário em memória (TTL de 1 hora) ──────────────────────────
 _dict_cache: dict = {}
@@ -191,14 +217,18 @@ def status():
 async def traduzir(
     arquivo: UploadFile = File(...),
     idioma: str = Form(default="português brasileiro coloquial"),
-    api_key: str = Form(default="")
+    api_key: str = Form(default=""),
+    x_campfire_key: str = Header(default="")
 ):
+    if CAMPFIRE_CLOUD_MODE and CAMPFIRE_ACCESS_KEY and x_campfire_key != CAMPFIRE_ACCESS_KEY:
+        raise HTTPException(status_code=401, detail="Chave de acesso inválida ou ausente.")
+
     ext = os.path.splitext(arquivo.filename)[1].lower()
 
     if ext not in MOBILE_EXTENSOES:
         return JSONResponse(
             status_code=400,
-            content={"erro": f"Extensão '{ext}' não suportada no mobile."}
+            content={"erro": f"Extensão '{ext}' não suportada {'neste servidor' if CAMPFIRE_CLOUD_MODE else 'no mobile'}."}
         )
 
     # Salva o arquivo recebido em temp
@@ -212,6 +242,13 @@ async def traduzir(
     # Importa o tradutor
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import tradutor as t
+
+    if CAMPFIRE_CLOUD_MODE:
+        # Remove formatos pesados demais pro free tier — dentro de um .zip/.rar,
+        # esses arquivos passam a ser simplesmente ignorados (não suportados),
+        # em vez de tentar carregar o Whisper e estourar a RAM do serviço.
+        for formato_pesado in FORMATOS_PESADOS_CLOUD:
+            t.EXTENSOES.pop(formato_pesado, None)
 
     # ── Inicializa Claude se tiver chave — sem chave = modo gratuito ──────────
     if api_key:
@@ -278,33 +315,39 @@ async def traduzir(
 
 if __name__ == "__main__":
 
-    def get_wifi_ip():
+    PORT = int(os.environ.get("PORT", 8000))
+
+    if CAMPFIRE_CLOUD_MODE:
+        print(f"\n☁️ Campfire Cloud Server rodando na porta {PORT}\n")
+        uvicorn.run(app, host="0.0.0.0", port=PORT)
+    else:
+        def get_wifi_ip():
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                ip = s.getsockname()[0]
+                s.close()
+                return ip
+            except:
+                return socket.gethostbyname(socket.gethostname())
+
+        ip = get_wifi_ip()
+        print(f"\n🔥 Campfire Server rodando em:")
+        print(f"   http://{ip}:{PORT}")
+        print(f"\n📱 Use esse IP no app mobile!\n")
+
+        # ── Gera QR Code pra conectar o mobile ───────────────────────────────────
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
-            s.close()
-            return ip
-        except:
-            return socket.gethostbyname(socket.gethostname())
+            import qrcode as _qr
+            print("📷 Escaneie com o app Campfire Mobile:\n")
+            qr = _qr.QRCode(border=1)
+            qr.add_data(ip)
+            qr.make(fit=True)
+            qr.print_ascii(invert=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            img.save("campfire_qr.png")
+            print(f"\n💾 QR salvo em campfire_qr.png\n")
+        except Exception as e:
+            print(f"⚠️ QR não disponível: {e}\n")
 
-    ip = get_wifi_ip()
-    print(f"\n🔥 Campfire Server rodando em:")
-    print(f"   http://{ip}:8000")
-    print(f"\n📱 Use esse IP no app mobile!\n")
-
-    # ── Gera QR Code pra conectar o mobile ───────────────────────────────────
-    try:
-        import qrcode as _qr
-        print("📷 Escaneie com o app Campfire Mobile:\n")
-        qr = _qr.QRCode(border=1)
-        qr.add_data(ip)
-        qr.make(fit=True)
-        qr.print_ascii(invert=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        img.save("campfire_qr.png")
-        print(f"\n💾 QR salvo em campfire_qr.png\n")
-    except Exception as e:
-        print(f"⚠️ QR não disponível: {e}\n")
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+        uvicorn.run(app, host="0.0.0.0", port=PORT)

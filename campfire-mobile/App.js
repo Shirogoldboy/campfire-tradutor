@@ -16,6 +16,15 @@ import {
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
+// Servidor padrão pra Arquivo Compactado (.zip/.rar) — preenchido depois do
+// deploy no Render. Sem isso configurado, o app cai no aviso de "servidor
+// necessário" e o usuário pode digitar um IP local ou URL de túnel manualmente.
+const CAMPFIRE_CLOUD_URL = ''
+// Chave de acesso compartilhada (mesma configurada como CAMPFIRE_ACCESS_KEY no
+// serviço). Não é segurança forte — só evita bots aleatórios batendo no free
+// tier — por isso pode ficar embutida aqui.
+const CAMPFIRE_CLOUD_KEY = ''
+
 const IDIOMAS = [
   { label: '🇧🇷 Português Brasileiro', value: 'português brasileiro coloquial', speechCode: 'pt-BR' },
   { label: '🇵🇹 Português Europeu',    value: 'português europeu',              speechCode: 'pt-PT' },
@@ -525,7 +534,12 @@ export default function App() {
         await Sharing.shareAsync(caminho); return
       }
 
-      if (!serverIp) {
+      // Sem IP configurado manualmente, usa o servidor cloud compartilhado
+      // (Render). Só exige configuração manual se o cloud ainda não foi
+      // publicado (CAMPFIRE_CLOUD_URL vazio) e o usuário não apontou pra um
+      // servidor próprio (PC local ou túnel tipo ngrok).
+      const usandoCloud = !serverIp
+      if (usandoCloud && !CAMPFIRE_CLOUD_URL) {
         Alert.alert('Servidor necessário', 'Configure o IP do PC nas configurações (⚙️).')
         setStatus('idle'); return
       }
@@ -535,7 +549,14 @@ export default function App() {
       formData.append('arquivo', { uri: arquivo.uri, name: arquivo.name, type: arquivo.mimeType || 'application/octet-stream' })
       formData.append('idioma', idioma)
       formData.append('api_key', apiKey)
-      const res = await fetch(`http://${serverIp}:8000/traduzir`, { method: 'POST', body: formData })
+      const baseServidor = usandoCloud
+        ? CAMPFIRE_CLOUD_URL
+        : (/^https?:\/\//.test(serverIp) ? serverIp.replace(/\/$/, '') : `http://${serverIp}:8000`)
+      const res = await fetch(`${baseServidor}/traduzir`, {
+        method: 'POST',
+        body: formData,
+        headers: usandoCloud ? { 'X-Campfire-Key': CAMPFIRE_CLOUD_KEY } : undefined,
+      })
 
       if (res.status === 402) {
         const err = await res.json()
@@ -573,12 +594,12 @@ export default function App() {
       <Text style={s.sub}>Configure o app. Tudo é opcional!</Text>
 
       <View style={s.card}>
-        <Text style={s.label}>🖥️ IP do Servidor (opcional)</Text>
-        <Text style={s.hint}>Necessário apenas para arquivos compactados via PC.</Text>
+        <Text style={s.label}>🖥️ Servidor Próprio (avançado, opcional)</Text>
+        <Text style={s.hint}>Arquivo Compactado (.zip/.rar) já usa nosso servidor na nuvem por padrão — só preencha aqui se quiser usar o PC local ou um túnel próprio (ex: https://xxxx.ngrok-free.app) no lugar dele.</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <TextInput style={[s.input, { flex: 1 }]} placeholder="ex: 192.168.1.10"
+          <TextInput style={[s.input, { flex: 1 }]} placeholder="ex: 192.168.1.10 ou https://xxxx.ngrok-free.app"
             placeholderTextColor="#666" value={serverIp} onChangeText={setServerIp}
-            autoCapitalize="none" keyboardType="numeric" />
+            autoCapitalize="none" keyboardType="default" />
           <TouchableOpacity style={s.btnQR} onPress={abrirQR}>
             <Text style={{ fontSize: 22 }}>📷</Text>
           </TouchableOpacity>
@@ -698,7 +719,7 @@ export default function App() {
 
       {modo?.aviso && <View style={s.avisoModo}><Text style={s.avisoModoText}>{modo.aviso}</Text></View>}
 
-      {modo?.tipo === 'servidor' && !serverIp && (
+      {modo?.tipo === 'servidor' && !serverIp && !CAMPFIRE_CLOUD_URL && (
         <View style={[s.avisoModo, { borderColor: '#f55' }]}>
           <Text style={[s.avisoModoText, { color: '#f55' }]}>⚠️ Servidor não configurado. Toque em ⚙️ e adicione o IP do PC.</Text>
         </View>
