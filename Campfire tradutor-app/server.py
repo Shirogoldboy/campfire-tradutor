@@ -52,8 +52,11 @@ MOBILE_EXTENSOES = {'.zip', '.rar'} if CAMPFIRE_CLOUD_MODE else {
     '.zip', '.rar'
 }
 
-# Formatos que obrigatoriamente precisam do Claude
-EXIGE_CLAUDE = {'.pdf', '.mkv', '.mp4', '.mp3', '.epub', '.zip', '.rar'}
+# Formatos que obrigatoriamente precisam do Claude. ZIP/RAR NÃO entram aqui:
+# cada arquivo interno passa por traduzir_lista(), que já tenta a camada
+# gratuita (MyMemory/LibreTranslate) por segmento antes de usar Claude —
+# exigir chave aqui bloquearia zips sem necessidade.
+EXIGE_CLAUDE = {'.pdf', '.mkv', '.mp4', '.mp3', '.epub'}
 
 # Formatos pesados demais pro free tier — só relevante em modo cloud, onde
 # são removidos de tradutor.EXTENSOES pra que arquivos desses tipos dentro de
