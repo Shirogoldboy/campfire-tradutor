@@ -64,8 +64,8 @@ direitos autorais no dicionário colaborativo.
 
 ## 7. Marcas e identidade visual
 
-O nome "Campfire Tradutor", seus logotipos e identidade visual são usados e reivindicados pelo
-Desenvolvedor, que pretende formalizar essa proteção por meio de registro junto ao INPI. Até a
+O nome "Campfire Tradutor", a marca "AlienRaccoon Entertainment" sob a qual o Desenvolvedor atua,
+seus logotipos e identidade visual são usados e reivindicados pelo Desenvolvedor, que pretende formalizar essa proteção por meio de registro junto ao INPI. Até a
 conclusão desse registro, a proteção decorre do uso e da eventual precedência de que trata o art.
 129, §1º, da Lei nº 9.279/1996 (Lei da Propriedade Industrial) — a propriedade plena da marca só se
 adquire com o registro validamente expedido (art. 129, *caput*, da mesma lei). Isso se aplica

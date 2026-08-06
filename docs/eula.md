@@ -88,11 +88,16 @@ Isso não afeta os direitos concedidos de forma independente sobre o código-fon
 
 ## 7. Marca e Identidade Visual
 
-O nome "Campfire Tradutor", seu logotipo e sua identidade visual **não** estão cobertos pela
-licença MIT do código-fonte e permanecem de titularidade exclusiva do Licenciante. Versões
-modificadas do código-fonte (forks), ainda que legítimas sob a licença MIT, não podem usar o nome
-"Campfire Tradutor" nem elementos de sua identidade visual de forma que sugira ser o produto
-oficial ou que cause confusão quanto à origem. Ver também o [Aviso de Direitos Autorais](aviso-direitos-autorais.md).
+O nome "Campfire Tradutor", a marca "AlienRaccoon Entertainment" sob a qual o Licenciante atua,
+seus logotipos e identidade visual **não** estão cobertos pela licença MIT do código-fonte. Esses
+elementos são usados e reivindicados pelo Licenciante, que pretende formalizar essa proteção por
+meio de registro junto ao INPI — até a conclusão desse registro, a proteção decorre do uso e da
+eventual precedência de que trata o art. 129, §1º, da Lei nº 9.279/1996 (Lei da Propriedade
+Industrial), já que a propriedade plena da marca só se adquire com o registro validamente expedido
+(art. 129, *caput*, da mesma lei). Versões modificadas do código-fonte (forks), ainda que
+legítimas sob a licença MIT, não podem usar esses nomes nem elementos da identidade visual de
+forma que sugira ser o produto oficial ou que cause confusão quanto à origem. Ver também o
+[Aviso de Direitos Autorais](aviso-direitos-autorais.md).
 
 ## 8. Atualizações
 
