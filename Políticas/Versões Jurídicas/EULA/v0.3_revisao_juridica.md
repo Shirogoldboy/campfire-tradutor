@@ -9,8 +9,9 @@ Modelo de negócio confirmado em 2026-08-05: freemium (Seção 2).
 **Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 Este Contrato de Licença de Usuário Final ("EULA") é um acordo legal entre você (pessoa física ou
-jurídica) e Caio Fabiano da Silva Costa, pessoa física ("Licenciante") para o uso do software
-Campfire Tradutor ("o Software"), incluindo suas versões para Windows (desktop) e Android (mobile).
+jurídica) e Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon
+Entertainment" ("Licenciante") para o uso do software Campfire Tradutor ("o Software"), incluindo
+suas versões para Windows (desktop) e Android (mobile).
 
 Ao instalar ou usar o Software, você concorda com os termos deste EULA. Se não concordar, não
 instale nem utilize o Software.

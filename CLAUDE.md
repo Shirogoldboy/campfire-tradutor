@@ -1,7 +1,7 @@
 # Campfire Tradutor — Contexto Completo do Projeto
 
 ## Visão Geral
-Aplicativo universal de tradução de arquivos desenvolvido por Caio (Shirogoldboy), dev solo brasileiro. Disponível em Desktop (Windows) e Mobile (Android). O diferencial principal é um sistema de 3 camadas que democratiza o acesso à tradução, reduzindo progressivamente o consumo de tokens via dicionário colaborativo.
+Aplicativo universal de tradução de arquivos desenvolvido por Caio Fabiano da Silva Costa (Shirogoldboy), dev solo brasileiro, sob a marca **"AlienRaccoon Entertainment"** (nome fantasia/estúdio, sem CNPJ ainda — decisão de 2026-08-06 de usar esse nome em tudo que for lançado daqui pra frente, incluindo o Campfire). Juridicamente, o Desenvolvedor/Licenciante nos documentos continua sendo Caio Fabiano da Silva Costa, pessoa física — "AlienRaccoon Entertainment" é citada como marca sob a qual ele atua, não como parte contratual (isso muda se/quando houver CNPJ). Disponível em Desktop (Windows) e Mobile (Android). O diferencial principal é um sistema de 3 camadas que democratiza o acesso à tradução, reduzindo progressivamente o consumo de tokens via dicionário colaborativo.
 
 ## Repositórios
 - App: github.com/Shirogoldboy/campfire-tradutor
@@ -173,6 +173,7 @@ versões (v0.1 Rascunho → v0.2 Revisão Técnica → v0.3 Revisão Jurídica �
 - [ ] Etapa 11 — Pedido de registro da marca no INPI (~R$355)
 - [ ] Etapa 12 — Registro do programa de computador no INPI (~R$80)
 - [x] Nome completo (Caio Fabiano da Silva Costa), foro (Cabo de Santo Agostinho/PE) e modelo de negócio (freemium — EULA Seção 2) confirmados em 2026-08-05
+- [x] Marca "AlienRaccoon Entertainment" adicionada em 2026-08-06 nos parágrafos de identificação do Desenvolvedor (Termos, EULA, Privacidade) — "Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca [...]". Como isso toca o texto da EULA já revisada (v0.3) pela advogada, vale avisá-la dessa mudança específica antes da assinatura final, mesmo sem alterar a parte contratante.
 - [ ] Publicar via GitHub Pages (`docs/` já preparado — falta habilitar Settings → Pages e confirmar antes de ir ao ar)
 - [ ] Conformidade contínua: revisar termos das APIs de terceiros sempre que mudarem; revisar os documentos a cada nova funcionalidade relevante; atualizar antes de cada publicação (Play Store, novo domínio, etc.)
 
