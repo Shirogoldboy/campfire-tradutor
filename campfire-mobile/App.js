@@ -16,14 +16,14 @@ import {
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-// Servidor padrão pra Arquivo Compactado (.zip/.rar) — preenchido depois do
-// deploy no Render. Sem isso configurado, o app cai no aviso de "servidor
-// necessário" e o usuário pode digitar um IP local ou URL de túnel manualmente.
-const CAMPFIRE_CLOUD_URL = ''
+// Servidor padrão pra Arquivo Compactado (.zip/.rar) — hospedado no Render.
+// Sem isso configurado, o app cai no aviso de "servidor necessário" e o
+// usuário pode digitar um IP local ou URL de túnel manualmente.
+const CAMPFIRE_CLOUD_URL = 'https://campfire-tradutor.onrender.com'
 // Chave de acesso compartilhada (mesma configurada como CAMPFIRE_ACCESS_KEY no
 // serviço). Não é segurança forte — só evita bots aleatórios batendo no free
 // tier — por isso pode ficar embutida aqui.
-const CAMPFIRE_CLOUD_KEY = ''
+const CAMPFIRE_CLOUD_KEY = 'VnhBk5cEM7raGSmm6WR3FgqJkfYY1Lm6'
 
 const IDIOMAS = [
   { label: '🇧🇷 Português Brasileiro', value: 'português brasileiro coloquial', speechCode: 'pt-BR' },
