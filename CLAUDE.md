@@ -116,6 +116,34 @@ npm run start
 python server.py
 ```
 
+## Servidor Cloud (mobile — Arquivo Compactado)
+Antes de 2026-08-06, o modo "Arquivo Compactado" (.zip/.rar) do app mobile só funcionava
+com o servidor local (`server.py`) rodando no PC — exigia mandar o IP (ou um túnel tipo
+ngrok) pra cada pessoa que fosse testar, e ficar com o PC ligado. Resolvido hospedando uma
+versão restrita do servidor no Render (free tier): `https://campfire-tradutor.onrender.com`.
+- `server.py` ganhou `CAMPFIRE_CLOUD_MODE=1` (setado via `ENV` no `Dockerfile`): restringe
+  `MOBILE_EXTENSOES` a `{.zip, .rar}`, remove `.mkv/.mp4/.mp3` de `tradutor.EXTENSOES` antes
+  de processar (evita o Whisper estourar os 512MB de RAM do free tier — áudio/vídeo dentro
+  de um zip é simplesmente ignorado, sem quebrar o resto), e exige header `X-Campfire-Key`
+  batendo com a env var `CAMPFIRE_ACCESS_KEY` do serviço (deterrente contra bots, não é
+  segurança forte — a mesma chave está embutida em `campfire-mobile/App.js`).
+- **Bug real corrigido nesse processo**: `processar_zip`/`processar_rar` em `tradutor.py`
+  retornavam `(b'', '.zip_done')` — funcionava no desktop (a pasta de saída é aberta
+  localmente) mas gerava um arquivo vazio no fluxo mobile/servidor, mesmo com o PC ligado.
+  Agora repacotam a pasta de saída num zip em memória e retornam os bytes de verdade.
+- Também corrigido: `EXIGE_CLAUDE` no servidor incluía `.zip`/`.rar`, bloqueando tradução
+  sem chave Anthropic — mas cada arquivo interno já passa por `traduzir_lista()`, que tenta
+  a camada gratuita primeiro. Removidos de `EXIGE_CLAUDE`. E o path hardcoded do Tesseract
+  (`C:\Program Files\...`) virou condicional a `sys.platform == 'win32'`, pra não quebrar
+  no container Linux.
+- `Dockerfile` + `requirements-cloud.txt` na raiz de `Campfire tradutor-app/` — build não
+  testado localmente (sem Docker no ambiente), validado direto no deploy do Render.
+- Texto, PDF, imagem e áudio/vídeo **não** passam pelo servidor — o app mobile já processa
+  esses direto (Claude/MyMemory/LibreTranslate client-side). Só ZIP/RAR dependia disso.
+- App mobile (`campfire-mobile/App.js`): `CAMPFIRE_CLOUD_URL`/`CAMPFIRE_CLOUD_KEY` no topo do
+  arquivo — usados por padrão; o campo manual "Servidor Próprio" no Setup continua existindo
+  pra quem quiser apontar pro PC local ou um túnel (ngrok) no lugar do cloud.
+
 ## Como upar pro GitHub
 ```powershell
 cd "C:\Users\Pichau\Documents\campfire projeto"
