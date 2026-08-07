@@ -118,7 +118,7 @@ tratado:
 - Portabilidade, quando aplicável;
 - Informações sobre com quem os dados são compartilhados.
 
-Para exercer esses direitos, entre em contato pelo e-mail caiofabianodbz2@gmail.com, que também
+Para exercer esses direitos, entre em contato pelo e-mail alienraccoonentertainment@gmail.com, que também
 serve, por ora, como canal para questões de proteção de dados.
 
 ## 5. Menores de idade
@@ -147,4 +147,4 @@ https://shirogoldboy.github.io/campfire-tradutor/politica-de-privacidade.
 
 ## 9. Contato
 
-Dúvidas sobre esta Política de Privacidade: caiofabianodbz2@gmail.com.
+Dúvidas sobre esta Política de Privacidade: alienraccoonentertainment@gmail.com.

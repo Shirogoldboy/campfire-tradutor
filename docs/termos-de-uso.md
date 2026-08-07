@@ -13,7 +13,7 @@ Termos de Uso. Se você não concorda com algum destes termos, não utilize o Ap
 
 O Campfire Tradutor é desenvolvido e mantido por Caio Fabiano da Silva Costa, pessoa física,
 atuando sob a marca "AlienRaccoon Entertainment", doravante "Desenvolvedor", com contato em
-caiofabianodbz2@gmail.com.
+alienraccoonentertainment@gmail.com.
 
 ## 2. Descrição do Serviço
 
@@ -162,4 +162,4 @@ em contrário.
 
 ## 15. Contato
 
-Dúvidas sobre estes Termos: caiofabianodbz2@gmail.com.
+Dúvidas sobre estes Termos: alienraccoonentertainment@gmail.com.

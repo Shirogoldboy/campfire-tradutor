@@ -16,4 +16,4 @@ para Windows e Android.
 Repositório do aplicativo: [github.com/Shirogoldboy/campfire-tradutor](https://github.com/Shirogoldboy/campfire-tradutor)
 Dicionário colaborativo: [github.com/Shirogoldboy/campfire-dictionary](https://github.com/Shirogoldboy/campfire-dictionary)
 
-Dúvidas: caiofabianodbz2@gmail.com
+Dúvidas: alienraccoonentertainment@gmail.com

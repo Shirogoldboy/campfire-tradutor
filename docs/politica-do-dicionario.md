@@ -74,7 +74,7 @@ constitua violação de direitos autorais de terceiros, veja o processo de notif
 
 O dicionário é mantido por contribuições automáticas de todos os usuários do Aplicativo. Isso
 significa que ele pode conter, ocasionalmente, traduções imprecisas. Se você encontrar uma
-entrada incorreta, pode reportar pelo e-mail caiofabianodbz2@gmail.com ou, por ser um repositório
+entrada incorreta, pode reportar pelo e-mail alienraccoonentertainment@gmail.com ou, por ser um repositório
 público no GitHub, abrir uma issue ou pull request diretamente no repositório do dicionário.
 
 ## 8. Sem garantias
@@ -84,4 +84,4 @@ O dicionário colaborativo é fornecido "como está", sem garantia de exatidão.
 
 ## 9. Contato
 
-caiofabianodbz2@gmail.com
+alienraccoonentertainment@gmail.com

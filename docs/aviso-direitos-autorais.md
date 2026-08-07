@@ -27,7 +27,7 @@ que viole direitos autorais de terceiros.
 
 Se você é titular de direitos autorais (ou representante autorizado) e acredita que um trecho
 publicado no dicionário colaborativo reproduz, sem autorização, obra protegida de forma que
-configure violação, envie uma notificação para **caiofabianodbz2@gmail.com** contendo:
+configure violação, envie uma notificação para **alienraccoonentertainment@gmail.com** contendo:
 
 1. Identificação da obra protegida supostamente violada;
 2. Localização do conteúdo no repositório (ex: nome do arquivo `.json` e o trecho específico,
@@ -51,7 +51,7 @@ entrar em contato para esclarecimentos adicionais antes de concluir a remoção.
 ## 5. Contranotificação
 
 Caso você seja a pessoa que contribuiu com o conteúdo removido e entenda que a remoção foi
-equivocada, pode enviar uma contranotificação para caiofabianodbz2@gmail.com explicando por que o
+equivocada, pode enviar uma contranotificação para alienraccoonentertainment@gmail.com explicando por que o
 uso é legítimo (ex: domínio público, uso autorizado, exceção legal aplicável). Avaliaremos o caso
 e poderemos restabelecer o conteúdo se a contranotificação for procedente.
 
@@ -83,4 +83,4 @@ sem prejuízo de mecanismos análogos de outras jurisdições aplicáveis à inf
 
 ## 9. Contato
 
-Dúvidas ou notificações relacionadas a direitos autorais: caiofabianodbz2@gmail.com
+Dúvidas ou notificações relacionadas a direitos autorais: alienraccoonentertainment@gmail.com
