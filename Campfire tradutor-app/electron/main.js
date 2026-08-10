@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, shell, Tray, Menu } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const crypto = require('crypto')
@@ -6,6 +6,10 @@ const { execSync, spawn } = require('child_process')
 
 const CONFIG_PATH    = path.join(app.getPath('userData'), 'campfire_config.json')
 const PROGRESS_DIR   = path.join(app.getPath('userData'), 'progress')
+
+let mainWindow = null
+let tray = null
+let isQuitting = false
 
 // Garante que a pasta de progresso existe
 if (!fs.existsSync(PROGRESS_DIR)) fs.mkdirSync(PROGRESS_DIR, { recursive: true })
@@ -42,6 +46,31 @@ function createWindow() {
   const isDev = !app.isPackaged
   if (isDev) win.loadURL('http://localhost:5173')
   else win.loadFile(path.join(__dirname, '../dist/index.html'))
+
+  // ── Fechar a janela só minimiza pra bandeja — traduções em andamento
+  // continuam rodando em segundo plano em vez de serem interrompidas ──────────
+  win.on('close', (event) => {
+    if (isQuitting) return
+    event.preventDefault()
+    win.hide()
+  })
+
+  mainWindow = win
+  return win
+}
+
+function criarTray() {
+  const iconPath = path.join(__dirname, '..', 'build', 'icon.png')
+  tray = new Tray(iconPath)
+  tray.setToolTip('Campfire Tradutor')
+
+  const menu = Menu.buildFromTemplate([
+    { label: 'Abrir Campfire', click: () => { mainWindow?.show() } },
+    { type: 'separator' },
+    { label: 'Sair', click: () => { isQuitting = true; app.quit() } },
+  ])
+  tray.setContextMenu(menu)
+  tray.on('click', () => { mainWindow?.show() })
 }
 
 function checkCmd(cmd) {
@@ -198,5 +227,11 @@ ipcMain.handle('clear-progress', async (_, caminho, idioma) => {
   return true
 })
 
-app.whenReady().then(createWindow)
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+app.whenReady().then(() => {
+  createWindow()
+  criarTray()
+})
+// Fechar a janela não encerra mais o app (ver win.on('close') em createWindow) —
+// ele continua rodando na bandeja. Só "Sair" no menu da bandeja realmente fecha.
+app.on('window-all-closed', () => {})
+app.on('before-quit', () => { isQuitting = true })

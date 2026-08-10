@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import hashlib
 import sqlite3
+import shutil
 from dotenv import load_dotenv
 import anthropic
 
@@ -96,6 +97,56 @@ def stats_cache():
         return 0
 
 inicializar_cache()
+
+# ─── BACKUP AUTOMÁTICO DO ARQUIVO ORIGINAL ────────────────────────────────────
+
+def fazer_backup_original(caminho):
+    """Copia o arquivo original pra uma subpasta Campfire_Backups/ antes de
+    traduzir, pra proteger contra perda caso o usuário substitua o arquivo
+    original pelo traduzido (ex: ROMs/saves de jogo) e algo dê errado depois."""
+    try:
+        pasta = os.path.dirname(caminho) or '.'
+        pasta_backup = os.path.join(pasta, 'Campfire_Backups')
+        os.makedirs(pasta_backup, exist_ok=True)
+        destino = os.path.join(pasta_backup, os.path.basename(caminho))
+        if os.path.exists(destino) and os.path.getsize(destino) == os.path.getsize(caminho):
+            return  # já tem backup idêntico, não duplica
+        shutil.copy2(caminho, destino)
+        print(f"🛟 Backup do original salvo em: {destino}", flush=True)
+    except Exception as e:
+        print(f"⚠️ Não foi possível fazer backup do original: {e}", flush=True)
+
+# ─── CHECKPOINT DE TRADUÇÃO (arquivos de texto grandes) ──────────────────────
+
+def traduzir_paragrafos_com_checkpoint(paragrafos, dict_key, caminho_saida, tamanho_chunk=40):
+    """Traduz uma lista de parágrafos em pedaços, salvando progresso incremental
+    em disco (arquivo .partial.json). Se o processo cair no meio, a próxima
+    execução do mesmo arquivo retoma de onde parou em vez de perder tudo."""
+    if len(paragrafos) <= tamanho_chunk:
+        return traduzir_lista(paragrafos, dict_key=dict_key)
+
+    partial_path = caminho_saida + '.partial.json'
+    ja_traduzidos = []
+    if os.path.exists(partial_path):
+        try:
+            with open(partial_path, 'r', encoding='utf-8') as f:
+                ja_traduzidos = json.load(f)
+            print(f"↻ Retomando checkpoint: {len(ja_traduzidos)} parágrafo(s) já traduzido(s).", flush=True)
+        except Exception:
+            ja_traduzidos = []
+
+    restantes = paragrafos[len(ja_traduzidos):]
+    resultado = list(ja_traduzidos)
+    for inicio in range(0, len(restantes), tamanho_chunk):
+        pedaco = restantes[inicio:inicio + tamanho_chunk]
+        resultado.extend(traduzir_lista(pedaco, dict_key=dict_key))
+        with open(partial_path, 'w', encoding='utf-8') as f:
+            json.dump(resultado, f, ensure_ascii=False)
+        print(f"💾 Checkpoint salvo: {len(resultado)}/{len(paragrafos)} parágrafo(s).", flush=True)
+
+    if os.path.exists(partial_path):
+        os.remove(partial_path)
+    return resultado
 
 # ─── DICIONÁRIO COLABORATIVO ──────────────────────────────────────────────────
 
@@ -489,7 +540,7 @@ def processar_txt(caminho):
     paragrafos = [p.strip() for p in texto.split('\n') if p.strip()]
 
     print(f"Traduzindo {len(paragrafos)} parágrafo(s)...", flush=True)
-    traduzidos = traduzir_lista(paragrafos, dict_key=dict_key)
+    traduzidos = traduzir_paragrafos_com_checkpoint(paragrafos, dict_key, caminho)
 
     return '\n\n'.join(traduzidos), '.txt'
 
@@ -509,7 +560,7 @@ def processar_srt(caminho):
     dict_key = get_dict_key(idioma_origem, _idioma_global)
     print(f"📖 Idioma detectado: {idioma_origem} → dicionário: {dict_key}", flush=True)
 
-    traduzidos = traduzir_lista([e['texto'] for e in estrutura], dict_key=dict_key)
+    traduzidos = traduzir_paragrafos_com_checkpoint([e['texto'] for e in estrutura], dict_key, caminho)
     for entry, trad in zip(estrutura, traduzidos):
         entry['texto'] = trad
     return '\n\n'.join([f"{e['numero']}\n{e['tempo']}\n{e['texto']}" for e in estrutura]), '.srt'
@@ -2301,12 +2352,36 @@ def gerar_guia_iso(idioma):
 
 NOMES_AUXILIARES = {"tutorial_instalacao.txt", "aviso_backup.txt", "como_usar_iso.txt"}
 
+def _progresso_lote_path(pasta):
+    return os.path.join(pasta, '.campfire_progress.json')
+
+def _carregar_progresso_lote(pasta):
+    caminho = _progresso_lote_path(pasta)
+    if not os.path.exists(caminho):
+        return set()
+    try:
+        with open(caminho, 'r', encoding='utf-8') as f:
+            dados = json.load(f)
+        if dados.get('idioma') != _idioma_global:
+            return set()  # idioma mudou, refaz tudo
+        return set(dados.get('concluidos', []))
+    except Exception:
+        return set()
+
+def _salvar_progresso_lote(pasta, concluidos):
+    try:
+        with open(_progresso_lote_path(pasta), 'w', encoding='utf-8') as f:
+            json.dump({'idioma': _idioma_global, 'concluidos': sorted(concluidos)}, f, ensure_ascii=False)
+    except Exception:
+        pass
+
 def processar_pasta(pasta):
     arquivos = []
     for nome in sorted(os.listdir(pasta)):
         caminho_completo = os.path.join(pasta, nome)
         if not os.path.isfile(caminho_completo): continue
         if nome in NOMES_AUXILIARES: continue
+        if nome.startswith('.campfire_progress') or nome.endswith('.partial.json'): continue
         nome_base, ext = os.path.splitext(nome)
         ext = ext.lower()
         if ext not in EXTENSOES: continue
@@ -2317,14 +2392,24 @@ def processar_pasta(pasta):
         print("ERRO: nenhum arquivo suportado encontrado na pasta.", flush=True)
         return
 
+    concluidos_anteriormente = _carregar_progresso_lote(pasta)
+    if concluidos_anteriormente:
+        print(f"↻ Checkpoint encontrado: {len(concluidos_anteriormente)} arquivo(s) já concluído(s) numa execução anterior.", flush=True)
+
     print(f"Encontrados {len(arquivos)} arquivo(s) suportado(s).", flush=True)
     sucesso, falhas = 0, 0
     precisa_tutorial, precisa_aviso, precisa_guia_iso = False, False, False
+    concluidos = set(concluidos_anteriormente)
 
     for idx, (caminho_arq, ext) in enumerate(arquivos, 1):
         nome = os.path.basename(caminho_arq)
+        if nome in concluidos_anteriormente:
+            print(f"\n[{idx}/{len(arquivos)}] {nome} — já concluído, pulando.", flush=True)
+            sucesso += 1
+            continue
         print(f"\n[{idx}/{len(arquivos)}] {nome}", flush=True)
         try:
+            fazer_backup_original(caminho_arq)
             handler = EXTENSOES[ext]
             conteudo, ext_saida = handler(caminho_arq)
             nome_base = os.path.splitext(nome)[0]
@@ -2338,9 +2423,14 @@ def processar_pasta(pasta):
             elif ext_saida in ('.json', '.xml') or handler is processar_binario: precisa_aviso = True
             print(f"OK: {saida}", flush=True)
             sucesso += 1
+            concluidos.add(nome)
+            _salvar_progresso_lote(pasta, concluidos)
         except Exception as e:
             print(f"ERRO em {nome}: {e}", flush=True)
             falhas += 1
+
+    if falhas == 0 and os.path.exists(_progresso_lote_path(pasta)):
+        os.remove(_progresso_lote_path(pasta))
 
     if precisa_tutorial:
         with open(os.path.join(pasta, "tutorial_instalacao.txt"), 'w', encoding='utf-8') as f:
@@ -2379,6 +2469,8 @@ if __name__ == '__main__':
 
     ext = os.path.splitext(caminho)[1].lower()
     usou_binario = False
+
+    fazer_backup_original(caminho)
 
     if ext in EXTENSOES:
         handler = EXTENSOES[ext]

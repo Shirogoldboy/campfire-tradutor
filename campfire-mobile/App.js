@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, ActivityIndicator, Alert, Platform, Modal
+  ScrollView, ActivityIndicator, Alert, Platform, Modal, AppState
 } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
@@ -383,6 +383,21 @@ async function processarAudioArquivo(arquivo, idioma, apiKey, hfToken, setLog) {
   return `=== TRANSCRIÇÃO ORIGINAL ===\n${transcricao}\n\n=== TRADUÇÃO (${idioma}) ===\n${traducao}`
 }
 
+// ─── Backup automático do arquivo original ──────────────────────────────────
+async function fazerBackupOriginal(arquivo) {
+  try {
+    const pastaBackup = FileSystem.documentDirectory + 'Campfire_Backups/'
+    const info = await FileSystem.getInfoAsync(pastaBackup)
+    if (!info.exists) await FileSystem.makeDirectoryAsync(pastaBackup, { intermediates: true })
+    const destino = pastaBackup + arquivo.name
+    const jaExiste = await FileSystem.getInfoAsync(destino)
+    if (jaExiste.exists) return
+    await FileSystem.copyAsync({ from: arquivo.uri, to: destino })
+  } catch {
+    // backup é best-effort — não deve travar a tradução se falhar
+  }
+}
+
 // ─── App principal ────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -442,6 +457,31 @@ export default function App() {
     AsyncStorage.getItem('hfToken').then(v => { if (v) setHfToken(v) })
   }, [])
 
+  // ── Aviso de segundo plano ────────────────────────────────────────────────
+  // O React Native não garante execução em segundo plano (principalmente no
+  // iOS). Se o app for minimizado no meio de uma tradução, avisamos ao voltar
+  // que ela pode ter sido interrompida, em vez de deixar o usuário sem saber.
+  const statusRef = useRef(status)
+  const foiParaBackgroundRef = useRef(false)
+  useEffect(() => { statusRef.current = status }, [status])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (proximoEstado) => {
+      if (proximoEstado !== 'active' && statusRef.current === 'traduzindo') {
+        foiParaBackgroundRef.current = true
+      } else if (proximoEstado === 'active' && foiParaBackgroundRef.current) {
+        foiParaBackgroundRef.current = false
+        if (statusRef.current === 'traduzindo') {
+          Alert.alert(
+            '⚠️ App foi para segundo plano',
+            'O Android/iOS pode pausar tarefas quando o app não está em primeiro plano. Se a tradução não concluir, tente novamente mantendo o app aberto na tela.'
+          )
+        }
+      }
+    })
+    return () => subscription.remove()
+  }, [])
+
   async function salvarConfigs() {
     await AsyncStorage.setItem('serverIp', serverIp)
     await AsyncStorage.setItem('apiKey', apiKey)
@@ -494,6 +534,7 @@ export default function App() {
   async function traduzir() {
     if (!arquivo) { Alert.alert('Selecione um arquivo primeiro.'); return }
     setStatus('traduzindo'); setLog('Iniciando tradução...')
+    await fazerBackupOriginal(arquivo)
 
     try {
       const ext = arquivo.name.split('.').pop().toLowerCase()
