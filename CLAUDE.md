@@ -90,6 +90,10 @@ Contribuição assíncrona ao dicionário (background thread)
 - [x] Avaliação de qualidade sem gastar tokens
 - [x] Token HuggingFace configurável no setup mobile
 - [x] Ícone novo (fogueira azul) em todos os formatos
+- [x] **Backup automático do original (2026-08-10)**: antes de traduzir, `fazer_backup_original()` (desktop, `tradutor.py`) e `fazerBackupOriginal()` (mobile, `App.js`) copiam o arquivo de entrada pra uma pasta `Campfire_Backups/` — protege contra perda quando o usuário substitui o original pelo traduzido (ex: ROMs/saves de jogo).
+- [x] **Checkpoint de progresso resiliente a queda (2026-08-10)**: `processar_pasta` grava `.campfire_progress.json` marcando arquivos já concluídos (retoma pulando os prontos se reiniciado); arquivos de texto grandes (.txt/.srt, >40 parágrafos) usam `traduzir_paragrafos_com_checkpoint()` com flush incremental em `.partial.json` — testado simulando interrupção no meio do processo, resultado correto após retomada.
+- [x] **Bandeja do sistema no desktop (2026-08-10)**: fechar a janela do Electron não mata mais o processo (`win.on('close')` previne o padrão e minimiza) — traduções em andamento continuam rodando; "Sair" no menu da bandeja encerra de verdade. Ícone reaproveitado de `build/icon.png`.
+- [x] **Aviso de segundo plano no mobile (2026-08-10)**: `AppState` detecta quando o app volta de segundo plano no meio de uma tradução e avisa que ela pode ter sido interrompida. **Não é execução em segundo plano de verdade** — o React Native (principalmente iOS) suspende JS quando minimizado; um foreground service nativo real exigiria build nativo separado (fora do escopo desta mudança).
 
 ## Como Buildar
 
