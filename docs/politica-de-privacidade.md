@@ -4,7 +4,7 @@ title: Política de Privacidade — Campfire Tradutor
 
 # Política de Privacidade — Campfire Tradutor
 
-**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
+**Versão:** v0.4 — Revisão Jurídica · **Data:** 10/08/2026
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon Entertainment"
@@ -101,9 +101,12 @@ da entrada em operação da nova funcionalidade.
 Os serviços de tradução de terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate,
 Hugging Face) podem processar os dados enviados em servidores localizados fora do Brasil. Essa
 transferência internacional ocorre porque é necessária para o funcionamento das funcionalidades de
-tradução que você mesmo aciona ao usar o Aplicativo, nos termos do art. 33 da Lei Geral de Proteção
-de Dados (Lei nº 13.709/2018). Consulte a Seção 1.1 para as políticas de privacidade de cada
-provedor quanto à localização e ao tratamento de dados em seus servidores.
+tradução que você mesmo aciona ao usar o Aplicativo, nos termos do art. 33, VIII, c/c art. 7º, V,
+da Lei Geral de Proteção de Dados (Lei nº 13.709/2018) — execução de contrato do qual o titular é
+parte, uma vez que o envio dos dados aos provedores mencionados ocorre exclusivamente em
+decorrência de ação voluntária do próprio usuário ao acionar a funcionalidade de tradução, nos
+termos aceitos ao utilizar o Aplicativo. Consulte a Seção 1.1 para as políticas de privacidade de
+cada provedor quanto à localização e ao tratamento de dados em seus servidores.
 
 ## 4. Base legal e seus direitos (LGPD)
 
@@ -122,8 +125,9 @@ serve, por ora, como canal para questões de proteção de dados.
 
 ## 5. Menores de idade
 
-O Aplicativo não é direcionado a menores de 13 anos e não coleta intencionalmente dados pessoais
-de crianças.
+O Aplicativo não é direcionado a menores de 13 anos. Caso o Desenvolvedor identifique que dados de
+uma criança foram tratados sem o consentimento apropriado de seus responsáveis legais, tais dados
+serão excluídos assim que possível.
 
 ## 6. Retenção de dados
 

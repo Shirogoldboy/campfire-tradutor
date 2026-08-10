@@ -4,7 +4,7 @@ title: Aviso de Direitos Autorais — Campfire Tradutor
 
 # Aviso de Direitos Autorais — Campfire Tradutor
 
-**Versão:** v0.2 — Revisão Técnica · **Data:** [DATA]
+**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
 
 ## 1. Respeito à propriedade intelectual
 

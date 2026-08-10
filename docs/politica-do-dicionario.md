@@ -17,8 +17,8 @@ Tradutor, reduzindo o custo de tradução para toda a comunidade.
 ## 2. Quais traduções podem contribuir e como funciona a filtragem
 
 Nem toda tradução feita no Aplicativo chega a ser contribuída ao dicionário. Somente segmentos
-traduzidos pelo Claude (Anthropic) — chamado internamente de *Campfire Smart Dictionary* [nome
-sugerido, ajuste como preferir] — são elegíveis. Antes de serem enviados ao repositório público,
+traduzidos pelo Claude (Anthropic) — chamado internamente de *Campfire Smart Dictionary* — são
+elegíveis. Antes de serem enviados ao repositório público,
 em segundo plano, esses segmentos passam por critérios internos automatizados de qualidade e
 coerência; os critérios técnicos específicos fazem parte do funcionamento interno do Aplicativo e
 constituem seu principal diferencial competitivo, não sendo detalhados publicamente.

@@ -2,6 +2,8 @@
 v0.3 — REVISÃO JURÍDICA (Advogada) concluída em 31/07/2026: nenhuma alteração de conteúdo
 necessária. Controle de opt-out (Seção 3), única pendência apontada pela advogada para a
 publicação oficial v1.0, já implementado tecnicamente (Setup → "Dicionário Colaborativo").
+Nome "Campfire Smart Dictionary" confirmado por Caio em 2026-08-10 (Seção 2) — sem mais
+pendências pra v1.0.
 Histórico de versões em: Políticas/Versões Jurídicas/Política do Dicionário/
 Mantém a descrição em alto nível de propósito — evite detalhar aqui os critérios técnicos
 exatos de validação/qualidade, que são o diferencial competitivo do produto.
@@ -22,8 +24,8 @@ Tradutor, reduzindo o custo de tradução para toda a comunidade.
 ## 2. Quais traduções podem contribuir e como funciona a filtragem
 
 Nem toda tradução feita no Aplicativo chega a ser contribuída ao dicionário. Somente segmentos
-traduzidos pelo Claude (Anthropic) — chamado internamente de *Campfire Smart Dictionary* [nome
-sugerido, ajuste como preferir] — são elegíveis. Antes de serem enviados ao repositório público,
+traduzidos pelo Claude (Anthropic) — chamado internamente de *Campfire Smart Dictionary* — são
+elegíveis. Antes de serem enviados ao repositório público,
 em segundo plano, esses segmentos passam por critérios internos automatizados de qualidade e
 coerência; os critérios técnicos específicos fazem parte do funcionamento interno do Aplicativo e
 constituem seu principal diferencial competitivo, não sendo detalhados publicamente.

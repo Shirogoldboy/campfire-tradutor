@@ -4,7 +4,7 @@ title: Termos de Uso — Campfire Tradutor
 
 # Termos de Uso — Campfire Tradutor
 
-**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
+**Versão:** v0.4 — Revisão Jurídica · **Data:** 10/08/2026
 
 ## 1. Aceitação dos Termos
 
@@ -110,10 +110,22 @@ para notificações de violação de direitos autorais.
 
 ## 9. Isenção de Garantias
 
-O Aplicativo é fornecido "como está" (*as is*), sem garantias de qualquer tipo, expressas ou
-implícitas, incluindo, mas não se limitando a, garantias de precisão das traduções, adequação a
-um propósito específico ou ausência de erros. Traduções automáticas — gratuitas ou via IA — podem
-conter imprecisões.
+O Aplicativo utiliza tecnologia de tradução automática e inteligência artificial, cuja imprecisão
+ocasional é uma característica inerente e conhecida dessa tecnologia, e não um defeito do serviço.
+O Desenvolvedor não garante a exatidão ou adequação das traduções gratuitas ou processadas via IA
+a um propósito específico, especialmente para uso oficial, jurídico, médico ou de outra natureza
+que exija precisão certificada — recomenda-se revisão humana antes de qualquer uso dessa natureza.
+
+O Aplicativo não deve ser utilizado como fonte de tradução oficial, juramentada, médica, jurídica
+ou de qualquer natureza que exija precisão certificada, sem revisão humana qualificada. O
+Desenvolvedor não se responsabiliza por danos decorrentes do uso de traduções geradas pelo
+Aplicativo em contextos que exijam esse tipo de precisão, sendo essa avaliação de risco de
+responsabilidade exclusiva do usuário que opta por utilizar o resultado sem revisão adicional.
+
+Quanto a falhas técnicas do próprio Aplicativo (ex.: corrupção de arquivos por erro do software,
+indisponibilidade não planejada), o Desenvolvedor empregará esforços razoáveis para correção, na
+medida em que a lei aplicável permitir a limitação de responsabilidade para software gratuito e
+distribuído sem fins lucrativos diretos.
 
 ## 10. Limitação de Responsabilidade
 
