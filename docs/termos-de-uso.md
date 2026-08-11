@@ -4,7 +4,7 @@ title: Termos de Uso — Campfire Tradutor
 
 # Termos de Uso — Campfire Tradutor
 
-**Versão:** v0.4 — Revisão Jurídica · **Data:** 10/08/2026
+**Versão:** v0.5 — Revisão Jurídica · **Data:** 11/08/2026
 
 ## 1. Aceitação dos Termos
 
@@ -72,9 +72,8 @@ Você concorda em **não** usar o Aplicativo para:
 - Traduzir, reproduzir ou distribuir conteúdo protegido por direitos autorais sem autorização,
   quando isso violar a lei aplicável ou os direitos de terceiros;
 - Praticar engenharia reversa, descompilação ou desmontagem do aplicativo **oficialmente
-  distribuído** (instalador Windows, pacote Android) com o objetivo de contornar mecanismos de
-  licenciamento, autenticação ou proteção — sem prejuízo dos direitos já concedidos de forma
-  independente sobre o código-fonte aberto, nos termos da Seção 8;
+  distribuído** (instalador Windows, pacote Android), exceto na medida em que isso seja
+  expressamente permitido pela lei aplicável;
 - Qualquer atividade que sobrecarregue, danifique ou comprometa a infraestrutura dos serviços de
   terceiros integrados (dicionário colaborativo, APIs de tradução, etc).
 
@@ -97,14 +96,13 @@ irrestrito por qualquer pessoa.
 ## 8. Propriedade Intelectual
 
 As restrições de uso descritas na Seção 6 aplicam-se ao aplicativo **oficialmente distribuído**
-(binários, instaladores e pacotes publicados pelo Desenvolvedor). Elas não restringem os direitos
-já concedidos, de forma independente, a qualquer pessoa que obtenha o código-fonte diretamente do
-repositório público sob **licença MIT** (github.com/Shirogoldboy/campfire-tradutor) — a qual, por
-si só, permite uso, cópia, modificação, fusão, publicação, distribuição, sublicenciamento e venda
-de cópias do código-fonte, nos termos da própria licença MIT.
+(binários, instaladores e pacotes publicados pelo Desenvolvedor). O código-fonte do Aplicativo é
+**proprietário** e de titularidade exclusiva do Desenvolvedor, não sendo disponibilizado
+publicamente.
 
-O dicionário colaborativo (github.com/Shirogoldboy/campfire-dictionary) é público e está sob
-licença CC0 1.0 Universal (domínio público). Marcas, nome e identidade visual do Campfire
+O dicionário colaborativo (github.com/Shirogoldboy/campfire-dictionary) **permanece público** e
+está sob licença CC0 1.0 Universal (domínio público) — essa natureza pública é independente do
+licenciamento do código-fonte do Aplicativo. Marcas, nome e identidade visual do Campfire
 Tradutor pertencem ao Desenvolvedor. Ver também o [Aviso de Direitos Autorais](aviso-direitos-autorais.md)
 para notificações de violação de direitos autorais.
 

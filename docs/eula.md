@@ -4,7 +4,7 @@ title: EULA — Campfire Tradutor
 
 # Contrato de Licença de Usuário Final (EULA) — Campfire Tradutor
 
-**Versão:** v0.4 — Revisão Jurídica · **Data:** 10/08/2026
+**Versão:** v0.5 — Revisão Jurídica · **Data:** 11/08/2026
 
 Este Contrato de Licença de Usuário Final ("EULA") é um acordo legal entre você (pessoa física ou
 jurídica) e Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon
@@ -16,11 +16,10 @@ instale nem utilize o Software.
 
 ## 1. Objeto e Âmbito de Aplicação
 
-Este EULA regula exclusivamente o uso do Software **oficialmente distribuído** pelo Licenciante —
-ou seja, os instaladores, pacotes e binários publicados nos canais oficiais (GitHub Releases,
-Play Store, quando aplicável). Ele não se aplica ao código-fonte disponibilizado publicamente no
-repositório github.com/Shirogoldboy/campfire-tradutor, o qual é distribuído sob **licença MIT** de
-forma independente — ver Seção 3.
+Este EULA regula o uso do Software **oficialmente distribuído** pelo Licenciante — ou seja, os
+instaladores, pacotes e binários publicados nos canais oficiais (GitHub Releases, Play Store,
+quando aplicável). O código-fonte do Software é **proprietário** e de titularidade exclusiva do
+Licenciante, não sendo disponibilizado publicamente — ver Seção 3.
 
 Este EULA trata da **licença de uso do software**. A relação entre você e o serviço prestado pelo
 Aplicativo (funcionalidades, dicionário colaborativo, isenções de garantia quanto ao conteúdo
@@ -39,19 +38,17 @@ freemium) — por exemplo, um servidor próprio opcional. Nesse caso, os termos 
 novas funcionalidades pagas serão informados previamente e não afetarão retroativamente o uso das
 funcionalidades gratuitas já disponibilizadas até então.
 
-## 3. Relação com o Código-Fonte Aberto (Licença MIT)
+## 3. Natureza Proprietária do Software
 
-O código-fonte do Campfire Tradutor é público e está disponível sob **licença MIT**
-(github.com/Shirogoldboy/campfire-tradutor). A licença MIT, por si só e independentemente deste
-EULA, já concede a qualquer pessoa que obtenha o código-fonte o direito de usar, copiar,
-modificar, mesclar, publicar, distribuir, sublicenciar e vender cópias do código-fonte, incluindo
-a criação de versões modificadas ("forks").
+O código-fonte do Campfire Tradutor é **proprietário** e de titularidade exclusiva do Licenciante.
+Apenas os instaladores e pacotes compilados (binários) são distribuídos publicamente, nos canais
+oficiais mencionados na Seção 1. O código-fonte **não** é disponibilizado publicamente e não está
+sujeito a nenhuma licença de código aberto.
 
-As restrições deste EULA (Seção 4) aplicam-se apenas ao uso do **binário oficialmente
-distribuído** pelo Licenciante — ou seja, você não pode redistribuir ou vender **a versão oficial
-já compilada** como se fosse sua. Isso não impede terceiros de compilar e distribuir suas próprias
-versões a partir do código-fonte aberto, nos termos da licença MIT, desde que não utilizem a marca
-"Campfire Tradutor" nem a identidade visual do projeto para isso — ver Seção 7.
+Este EULA regula exclusivamente o uso dos **binários oficialmente distribuídos** pelo Licenciante —
+ou seja, você não pode redistribuir ou vender **a versão oficial já compilada** como se fosse sua.
+Não há autorização, sob qualquer licença, para obter, reconstruir ou redistribuir o código-fonte
+do Software — ver Seção 4 (Restrições).
 
 ## 4. Restrições
 
@@ -60,19 +57,20 @@ permitido por lei:
 
 - Redistribuir, vender ou sublicenciar o binário oficial (instalador, APK) como se fosse produto
   próprio;
-- Praticar engenharia reversa, descompilar ou desmontar o binário oficial com o objetivo de
-  contornar mecanismos de licenciamento, autenticação ou proteção;
+- Praticar engenharia reversa, descompilar ou desmontar o binário oficial, exceto na medida em que
+  isso seja expressamente permitido por lei aplicável, independentemente da finalidade;
 - Remover avisos de direitos autorais, marcas ou outros avisos de propriedade do binário oficial;
 - Usar a marca, o nome ou a identidade visual "Campfire Tradutor" (ver Seção 7) em produto
-  concorrente, ainda que este seja construído a partir do código-fonte aberto.
+  concorrente.
 
 ## 5. Componentes de Terceiros
 
 O Software incorpora bibliotecas e componentes de terceiros de código aberto (ex: Electron, React,
 Python, FastAPI, PyInstaller, Whisper, Tesseract OCR, entre outros), cada um sujeito à sua
-própria licença. A lista completa de componentes e licenças está no arquivo
-[NOTICE.md](https://github.com/Shirogoldboy/campfire-tradutor/blob/main/NOTICE.md), na raiz do
-repositório.
+própria licença. A lista completa de componentes e licenças está disponível no arquivo
+[NOTICE.md](https://github.com/Shirogoldboy/campfire-tradutor/blob/main/NOTICE.md), incluído na
+instalação do Software e publicado publicamente na raiz do repositório
+github.com/Shirogoldboy/campfire-tradutor.
 
 O uso de serviços de terceiros integrados ao Software (Anthropic Claude, MyMemory, LibreTranslate,
 Hugging Face, GitHub) está sujeito aos termos de uso e políticas de privacidade de cada um desses
@@ -82,21 +80,19 @@ Seção 8 dos [Termos de Uso](termos-de-uso.md).
 ## 6. Propriedade
 
 O Software oficialmente distribuído é licenciado, não vendido. O Licenciante retém todos os
-direitos, títulos e interesses sobre o binário oficial não expressamente concedidos neste EULA.
-Isso não afeta os direitos concedidos de forma independente sobre o código-fonte pela licença MIT
-(Seção 3).
+direitos, títulos e interesses sobre o Software, incluindo seu código-fonte, não expressamente
+concedidos neste EULA (Seção 3).
 
 ## 7. Marca e Identidade Visual
 
 O nome "Campfire Tradutor", a marca "AlienRaccoon Entertainment" sob a qual o Licenciante atua,
-seus logotipos e identidade visual **não** estão cobertos pela licença MIT do código-fonte. Esses
-elementos são usados e reivindicados pelo Licenciante, que pretende formalizar essa proteção por
-meio de registro junto ao INPI — até a conclusão desse registro, a proteção decorre do uso e da
-eventual precedência de que trata o art. 129, §1º, da Lei nº 9.279/1996 (Lei da Propriedade
-Industrial), já que a propriedade plena da marca só se adquire com o registro validamente expedido
-(art. 129, *caput*, da mesma lei). Versões modificadas do código-fonte (forks), ainda que
-legítimas sob a licença MIT, não podem usar esses nomes nem elementos da identidade visual de
-forma que sugira ser o produto oficial ou que cause confusão quanto à origem. Ver também o
+seus logotipos e identidade visual são usados e reivindicados pelo Licenciante, que pretende
+formalizar essa proteção por meio de registro junto ao INPI — até a conclusão desse registro, a
+proteção decorre do uso e da eventual precedência de que trata o art. 129, §1º, da Lei nº
+9.279/1996 (Lei da Propriedade Industrial), já que a propriedade plena da marca só se adquire com
+o registro validamente expedido (art. 129, *caput*, da mesma lei). Como o código-fonte não é
+disponibilizado publicamente, não existe licença aberta que autorize terceiros a criar versões
+derivadas (forks) do Software. Ver também o
 [Aviso de Direitos Autorais](aviso-direitos-autorais.md).
 
 ## 8. Atualizações
@@ -110,9 +106,8 @@ Este EULA vigora até ser rescindido. A licença concedida na Seção 2 termina 
 aviso prévio, caso você descumpra qualquer restrição da Seção 4. Após a rescisão, você deve
 desinstalar o Software oficialmente distribuído e destruir todas as cópias em sua posse.
 
-A rescisão deste EULA **não afeta** direitos exercidos de forma independente sobre o código-fonte
-sob licença MIT (Seção 3), que subsistem por si só e não podem ser revogados retroativamente pelo
-Licenciante.
+A rescisão deste EULA não gera, por si só, nenhum direito adicional sobre o código-fonte do
+Software, que permanece de titularidade exclusiva do Licenciante.
 
 ## 10. Isenção de Garantias e Limitação de Responsabilidade
 

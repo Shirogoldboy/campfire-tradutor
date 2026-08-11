@@ -4,7 +4,7 @@ title: Aviso de Direitos Autorais — Campfire Tradutor
 
 # Aviso de Direitos Autorais — Campfire Tradutor
 
-**Versão:** v0.3 — Revisão Jurídica · **Data:** 31/07/2026
+**Versão:** v0.4 — Revisão Jurídica · **Data:** 11/08/2026
 
 ## 1. Respeito à propriedade intelectual
 
@@ -68,12 +68,12 @@ seus logotipos e identidade visual são usados e reivindicados pelo
 Desenvolvedor, que pretende formalizar essa proteção por meio de registro junto ao INPI. Até a
 conclusão desse registro, a proteção decorre do uso e da eventual precedência de que trata o art.
 129, §1º, da Lei nº 9.279/1996 (Lei da Propriedade Industrial) — a propriedade plena da marca só se
-adquire com o registro validamente expedido (art. 129, *caput*, da mesma lei). Isso se aplica
-inclusive frente a versões modificadas do código-fonte aberto (forks) — ver [EULA](eula.md),
-Seção 7. Uso não autorizado desses elementos para fins comerciais ou que possa causar confusão
-sobre a origem do Aplicativo não é permitido. [Atualizar após conclusão do registro da marca no
-INPI, incluindo o número do processo/registro quando disponível — a partir daí, a titularidade
-passa a ser fato consumado.]
+adquire com o registro validamente expedido (art. 129, *caput*, da mesma lei). Como o código-fonte
+do Aplicativo não é disponibilizado publicamente, não existem versões derivadas (forks) legítimas
+sob licença aberta — ver [EULA](eula.md), Seção 3. Uso não autorizado desses elementos para fins
+comerciais ou que possa causar confusão sobre a origem do Aplicativo não é permitido. [Atualizar
+após conclusão do registro da marca no INPI, incluindo o número do processo/registro quando
+disponível — a partir daí, a titularidade passa a ser fato consumado.]
 
 ## 8. Lei Aplicável
 
