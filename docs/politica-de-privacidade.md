@@ -4,7 +4,7 @@ title: Política de Privacidade — Campfire Tradutor
 
 # Política de Privacidade — Campfire Tradutor
 
-**Versão:** v0.4 — Revisão Jurídica · **Data:** 10/08/2026
+**Versão:** v0.5 — Revisão Técnica (aguardando confirmação jurídica) · **Data:** 13/08/2026
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon Entertainment"
@@ -38,12 +38,20 @@ privacidade. Recomendamos consultá-las:
 - Anthropic: https://www.anthropic.com/legal/privacy
 - Hugging Face: https://huggingface.co/privacy
 
+**Servidor próprio (modo "Arquivo Compactado" — .zip/.rar, mobile):** diferente dos demais modos,
+esse formato é processado por meio de um servidor que nós mesmos operamos, hospedado no provedor
+Render. Esse servidor recebe o conteúdo do arquivo e, quando você fornece uma chave de API da
+Anthropic, também a recebe — de forma transitória, apenas para executar a tradução solicitada.
+Nenhum desses dados é armazenado pelo servidor após o processamento da requisição.
+
 ### 1.2 Chaves de API
 Sua chave da Anthropic e/ou token da Hugging Face, quando fornecidos, são armazenados **apenas
 localmente** no seu dispositivo (no desktop, em um arquivo de configuração na pasta de dados do
-aplicativo; no mobile, em armazenamento local do app). Nós **não temos acesso** a essas chaves e
-elas **não são enviadas** para nossos servidores — porque não operamos servidor central para esse
-fim.
+aplicativo; no mobile, em armazenamento local do app). Nós não retemos nem armazenamos essas
+chaves em nenhum servidor. A única exceção é o modo "Arquivo Compactado" (Seção 1.1): nesse caso
+específico, a chave da Anthropic é transmitida ao nosso servidor cloud de forma transitória, usada
+apenas para processar a tradução solicitada e descartada em seguida, sem retenção após a conclusão
+do processamento.
 
 ### 1.3 Contribuições ao dicionário colaborativo
 Pares de texto original → tradução, gerados durante o uso do Aplicativo, podem ser enviados de
@@ -99,7 +107,8 @@ da entrada em operação da nova funcionalidade.
 ## 3. Transferência Internacional de Dados
 
 Os serviços de tradução de terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate,
-Hugging Face) podem processar os dados enviados em servidores localizados fora do Brasil. Essa
+Hugging Face), bem como nosso próprio servidor cloud (Seção 1.1, hospedado no provedor Render),
+podem processar os dados enviados em servidores localizados fora do Brasil. Essa
 transferência internacional ocorre porque é necessária para o funcionamento das funcionalidades de
 tradução que você mesmo aciona ao usar o Aplicativo, nos termos do art. 33, VIII, c/c art. 7º, V,
 da Lei Geral de Proteção de Dados (Lei nº 13.709/2018) — execução de contrato do qual o titular é
