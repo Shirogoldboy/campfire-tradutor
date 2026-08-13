@@ -1,12 +1,14 @@
 # NOTICE — Componentes de Terceiros
 
-O Campfire Tradutor (código-fonte sob licença MIT — ver `LICENSE`) incorpora as bibliotecas de
+O Campfire Tradutor (software distribuído sob licença proprietária — ver
+[EULA](https://shirogoldboy.github.io/campfire-tradutor/eula)) incorpora as bibliotecas de
 terceiros listadas abaixo. Cada uma permanece sob sua própria licença, listada aqui para fins de
-atribuição e conformidade — ver [EULA](Políticas/eula.md), Seção 5 ("Componentes de Terceiros").
+atribuição e conformidade — ver EULA, Seção 5 ("Componentes de Terceiros").
 
-Verificado em 2026-08-05. Todas as licenças abaixo são permissivas (MIT, BSD, Apache-2.0, ISC,
-domínio público) e compatíveis com a distribuição do binário sob os termos do EULA — nenhuma exige
-relicenciamento do programa combinado.
+Verificado em 2026-08-05, atualizado em 2026-08-13. Todas as licenças abaixo são permissivas (MIT,
+BSD, Apache-2.0, ISC, domínio público) e compatíveis com a distribuição do binário sob os termos
+do EULA — nenhuma exige relicenciamento do programa combinado, inclusive após o código-fonte ter
+deixado de ser público (a natureza da licença de terceiros não depende disso).
 
 ## Desktop (Python)
 
@@ -72,6 +74,12 @@ evita que a licença delas se estenda ao Aplicativo:
 
 Em 2026-08-05, três dependências com licença copyleft forte — `ndspy` (GPLv3+), `PyMuPDF`/fitz
 (AGPLv3) e `EbookLib` (AGPLv3) — foram **removidas e substituídas** por implementações próprias ou
-alternativas permissivas, especificamente para que o `LICENSE` MIT do repositório seja preciso em
-relação ao binário distribuído. Ver `CLAUDE.md`, seção "Observações Importantes", para detalhes
-técnicos de cada substituição.
+alternativas permissivas, especificamente para evitar qualquer conflito entre essas licenças e a
+distribuição do binário — condição que se mantém independentemente do código-fonte ser ou não
+público.
+
+Em 2026-08-11, o código-fonte do Campfire Tradutor deixou de ser distribuído publicamente (ver
+[EULA](https://shirogoldboy.github.io/campfire-tradutor/eula), Seção 3). Essa mudança não afeta as
+obrigações de atribuição às bibliotecas de terceiros listadas acima — este documento continua
+sendo mantido e publicado junto ao binário distribuído, conforme exigido pelas respectivas
+licenças (MIT, BSD, Apache-2.0, ISC, LGPL).
