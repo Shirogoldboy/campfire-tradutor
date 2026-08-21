@@ -4,7 +4,7 @@ title: Política de Privacidade — Campfire Tradutor
 
 # Política de Privacidade — Campfire Tradutor
 
-**Versão:** v0.5 — Revisão Técnica (aguardando confirmação jurídica) · **Data:** 13/08/2026
+**Versão:** v0.5 — Revisão Jurídica · **Data:** 13/08/2026
 
 Esta Política de Privacidade descreve como o Campfire Tradutor ("o Aplicativo"), desenvolvido por
 Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon Entertainment"
@@ -38,11 +38,14 @@ privacidade. Recomendamos consultá-las:
 - Anthropic: https://www.anthropic.com/legal/privacy
 - Hugging Face: https://huggingface.co/privacy
 
-**Servidor próprio (modo "Arquivo Compactado" — .zip/.rar, mobile):** diferente dos demais modos,
-esse formato é processado por meio de um servidor que nós mesmos operamos, hospedado no provedor
+**Servidor próprio (modo "Arquivo Compactado" — .zip/.rar, mobile):** diferentemente dos demais
+modos, esse formato é processado por meio de um servidor operado por nós, hospedado no provedor
 Render. Esse servidor recebe o conteúdo do arquivo e, quando você fornece uma chave de API da
-Anthropic, também a recebe — de forma transitória, apenas para executar a tradução solicitada.
-Nenhum desses dados é armazenado pelo servidor após o processamento da requisição.
+Anthropic, também a recebe, de forma transitória, apenas para executar a tradução solicitada — sem
+retenção intencional em disco após o processamento da requisição. Como em qualquer sistema, não é
+possível garantir de forma absoluta a ausência de registros técnicos residuais (ex.: logs de erro),
+mas esses registros não são de recuperação nem consulta rotineira e não integram nenhuma base de
+dados de usuários.
 
 ### 1.2 Chaves de API
 Sua chave da Anthropic e/ou token da Hugging Face, quando fornecidos, são armazenados **apenas
@@ -119,10 +122,11 @@ cada provedor quanto à localização e ao tratamento de dados em seus servidore
 
 ## 4. Base legal e seus direitos (LGPD)
 
-Como o Aplicativo não coleta dados pessoais identificáveis em servidores próprios, o tratamento de
-dados pessoais por nossa parte é mínimo. Ainda assim, conforme a Lei Geral de Proteção de Dados
-(Lei nº 13.709/2018), você tem direito a solicitar, em relação a qualquer dado pessoal eventualmente
-tratado:
+Nossos próprios servidores tratam dados pessoais de forma limitada e apenas nos casos descritos
+nesta Política (em especial a Seção 1.1, modo "Arquivo Compactado"). Fora dessa exceção, o
+Aplicativo não coleta dados pessoais identificáveis em servidores próprios. Ainda assim, conforme a
+Lei Geral de Proteção de Dados (Lei nº 13.709/2018), você tem direito a solicitar, em relação a
+qualquer dado pessoal eventualmente tratado:
 
 - Confirmação da existência de tratamento;
 - Acesso, correção ou exclusão dos dados;
@@ -143,7 +147,8 @@ serão excluídos assim que possível.
 Dados armazenados localmente (cache, progresso, configurações) permanecem no seu dispositivo até
 que você os apague manualmente ou desinstale o Aplicativo. Contribuições já publicadas no
 dicionário colaborativo público permanecem lá, por serem de natureza pública e sem vínculo
-identificável a você.
+identificável a você. Dados processados pelo nosso servidor cloud próprio (modo "Arquivo
+Compactado", Seção 1.1) não ficam retidos após a conclusão da tradução solicitada.
 
 ## 7. Transferência de Titularidade
 

@@ -4,7 +4,7 @@ title: Termos de Uso — Campfire Tradutor
 
 # Termos de Uso — Campfire Tradutor
 
-**Versão:** v0.5 — Revisão Jurídica · **Data:** 11/08/2026
+**Versão:** v0.7 — Revisão Jurídica · **Data:** 13/08/2026
 
 ## 1. Aceitação dos Termos
 
@@ -31,7 +31,11 @@ e outros formatos de arquivo usando uma combinação de:
 Determinados formatos e funcionalidades exigem que o usuário forneça sua própria chave de API
 da Anthropic (e, opcionalmente, um token da Hugging Face para transcrição de áudio). O
 Desenvolvedor **não fornece, vende ou intermedia** essas chaves e **não tem acesso** a elas além
-do armazenamento local no dispositivo do usuário.
+do armazenamento local no dispositivo do usuário — com uma exceção: no modo "Arquivo Compactado"
+(.zip/.rar, mobile), a chave da Anthropic, quando fornecida, é transmitida de forma transitória ao
+servidor cloud próprio do Desenvolvedor (hospedado no provedor Render), usada apenas para processar
+a tradução solicitada e descartada em seguida, sem retenção após a conclusão do processamento — ver
+Política de Privacidade, Seção 1.1 e 1.2, para detalhes.
 
 Qualquer custo de uso da API da Anthropic (ou de outros serviços de terceiros que exijam chave
 própria) é de responsabilidade exclusiva do usuário, conforme os termos de preço do respectivo
@@ -135,6 +139,10 @@ ROMs) ou custos de API de terceiros.
 Em particular, o Desenvolvedor não se responsabiliza por indisponibilidade, instabilidade,
 alteração de termos, encerramento ou qualquer outra ação unilateral dos provedores de serviços de
 terceiros integrados ao Aplicativo (Anthropic, MyMemory, LibreTranslate, Hugging Face, GitHub).
+
+Essa limitação também abrange o servidor cloud próprio do Desenvolvedor, utilizado no modo
+"Arquivo Compactado" (hospedado no provedor Render) — sua disponibilidade contínua não é garantida,
+pelas mesmas razões aplicáveis aos demais serviços mencionados nesta Seção.
 
 Recomenda-se **sempre manter backup** dos arquivos originais antes de traduzi-los, especialmente
 arquivos binários de jogos e ROMs.

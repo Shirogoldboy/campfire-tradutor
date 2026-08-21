@@ -4,7 +4,7 @@ title: EULA — Campfire Tradutor
 
 # Contrato de Licença de Usuário Final (EULA) — Campfire Tradutor
 
-**Versão:** v0.5 — Revisão Jurídica · **Data:** 11/08/2026
+**Versão:** v0.6 — Revisão Jurídica · **Data:** 13/08/2026
 
 Este Contrato de Licença de Usuário Final ("EULA") é um acordo legal entre você (pessoa física ou
 jurídica) e Caio Fabiano da Silva Costa, pessoa física, atuando sob a marca "AlienRaccoon
@@ -119,7 +119,9 @@ Na máxima extensão permitida pela lei aplicável — e sem prejuízo dos direi
 não podem ser afastados por contrato, incluindo os previstos no Código de Defesa do Consumidor
 (Lei nº 8.078/1990) —, o Licenciante não será responsável por danos indiretos, incidentais ou
 consequentes decorrentes do uso ou impossibilidade de uso do Software, incluindo danos decorrentes
-de indisponibilidade ou alteração de serviços de terceiros integrados (Seção 5). Ver também os
+de indisponibilidade ou alteração de serviços de terceiros integrados (Seção 5), bem como do
+servidor cloud próprio do Licenciante utilizado no modo "Arquivo Compactado" (hospedado no provedor
+Render), cuja disponibilidade contínua também não é garantida. Ver também os
 [Termos de Uso](termos-de-uso.md).
 
 ## 11. Lei Aplicável
