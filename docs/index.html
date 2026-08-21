@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campfire Tradutor — tradução de arquivos com IA, de graça</title>
+<meta name="description" content="Traduza documentos, planilhas, legendas, imagens, áudio e vídeo com o Campfire Tradutor. Grátis, sem conta, para Windows e Android.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #fdf8f2;
+    --bg-elevated: #ffffff;
+    --bg-soft: #f6ede0;
+    --text: #241a10;
+    --text-muted: #7a6650;
+    --accent: #e05d1f;
+    --accent-2: #ff9d4d;
+    --border: #ecdfcc;
+    --shadow: 0 8px 30px rgba(60, 30, 0, 0.08);
+    --radius: 16px;
+    --code-bg: #f1e6d6;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15100c;
+      --bg-elevated: #1e1712;
+      --bg-soft: #241b14;
+      --text: #f4ece0;
+      --text-muted: #b8a692;
+      --accent: #ff8a3d;
+      --accent-2: #ffc178;
+      --border: #35291d;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      --code-bg: #2a1f16;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #15100c;
+    --bg-elevated: #1e1712;
+    --bg-soft: #241b14;
+    --text: #f4ece0;
+    --text-muted: #b8a692;
+    --accent: #ff8a3d;
+    --accent-2: #ffc178;
+    --border: #35291d;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    --code-bg: #2a1f16;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand span.flame { font-size: 1.3rem; }
+  .navlinks {
+    display: flex;
+    gap: 22px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .navlinks a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .navlinks a:hover { color: var(--accent); }
+  .theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-right { display: flex; align-items: center; gap: 18px; }
+
+  @media (max-width: 640px) {
+    .navlinks { display: none; }
+  }
+
+  /* HERO */
+  header.hero {
+    padding: 84px 0 64px;
+    text-align: center;
+    background:
+      radial-gradient(60% 50% at 50% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+  }
+  .hero-flame {
+    font-size: 3.4rem;
+    display: block;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 6px 18px color-mix(in srgb, var(--accent) 45%, transparent));
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+  .hero p.lead {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto 34px;
+  }
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #1a0e00;
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  .btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn small {
+    display: block;
+    font-weight: 500;
+    opacity: 0.75;
+    font-size: 0.75rem;
+  }
+
+  /* SECTIONS */
+  section { padding: 64px 0; }
+  section.alt { background: var(--bg-soft); }
+  .section-head {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 40px;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 8px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .section-head p { color: var(--text-muted); margin: 0; }
+
+  /* STEPS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 780px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 22px;
+    box-shadow: var(--shadow);
+  }
+  .step .num {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .step h3 { margin: 0 0 8px; font-size: 1.05rem; }
+  .step p { margin: 0; color: var(--text-muted); font-size: 0.94rem; }
+
+  /* FORMATS */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .chip {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  /* DOWNLOAD CARDS */
+  .dl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  @media (max-width: 780px) { .dl-grid { grid-template-columns: 1fr; } }
+  .dl-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .dl-card h3 {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+  }
+  .dl-card .tag {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .dl-card p.desc { color: var(--text-muted); font-size: 0.92rem; margin: 10px 0 20px; }
+  .dl-card .btn-primary { width: 100%; justify-content: center; margin-bottom: 12px; }
+  .dl-card .btn-secondary { width: 100%; justify-content: center; }
+
+  details.smartscreen {
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  details.smartscreen summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+  details.smartscreen .body {
+    margin-top: 10px;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+  code.hash {
+    display: block;
+    background: var(--code-bg);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    word-break: break-all;
+    margin-top: 8px;
+  }
+
+  /* TRUST */
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 780px) { .trust-grid { grid-template-columns: 1fr; } }
+  .trust-item {
+    text-align: center;
+    padding: 20px;
+  }
+  .trust-item .icon { font-size: 1.6rem; margin-bottom: 10px; }
+  .trust-item h4 { margin: 0 0 6px; font-size: 0.98rem; }
+  .trust-item p { margin: 0; color: var(--text-muted); font-size: 0.86rem; }
+
+  /* LEGAL DOCS */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 780px) { .docs-grid { grid-template-columns: 1fr; } }
+  .doc-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease;
+  }
+  .doc-link:hover { border-color: var(--accent); }
+  .doc-link .ico { font-size: 1.3rem; }
+  .doc-link small {
+    display: block;
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-top: 2px;
+  }
+
+  /* CONTACT / FOOTER */
+  .contact-box {
+    text-align: center;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 24px;
+    box-shadow: var(--shadow);
+  }
+  .contact-box a.email {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+  footer a { color: var(--text-muted); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="brand"><span class="flame">🔥</span> Campfire Tradutor</a>
+    <div class="nav-right">
+      <ul class="navlinks">
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="#documentos">Documentos</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">🌓</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="hero-flame">🔥</span>
+    <h1>Traduza qualquer arquivo com IA — de graça</h1>
+    <p class="lead">
+      Documentos, planilhas, legendas, imagens, áudio, vídeo e até arquivos de jogos.
+      Sem conta, sem cadastro, funcionando direto no seu computador ou celular.
+    </p>
+    <div class="cta-row">
+      <a href="#download" class="btn btn-primary">
+        ⬇️ Baixar o Campfire
+      </a>
+      <a href="https://github.com/Shirogoldboy/campfire-tradutor" class="btn btn-secondary">
+        Ver repositório
+      </a>
+    </div>
+  </div>
+</header>
+
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Como funciona</div>
+      <h2>Três camadas, do mais barato pro mais poderoso</h2>
+      <p>Quanto mais gente usa, mais o dicionário colaborativo cresce — e menos tradução precisa passar pelas camadas seguintes.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>Dicionário colaborativo</h3>
+        <p>Segmentos já traduzidos pela comunidade são reaproveitados na hora, de graça — sem gastar nada, sem esperar nada.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>Tradução automática gratuita</h3>
+        <p>O que não está no dicionário passa por serviços públicos de tradução automática, cobrindo a maior parte do restante.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Inteligência Artificial</h3>
+        <p>Só quando as camadas gratuitas não bastam, o Claude (Anthropic) entra — usando a sua própria chave de API, quando você fornece.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Formatos suportados</div>
+      <h2>Se é um arquivo, o Campfire tenta traduzir</h2>
+    </div>
+    <div class="chips">
+      <span class="chip">📄 .txt .srt .json .xml .csv</span>
+      <span class="chip">📘 .epub .docx .xlsx</span>
+      <span class="chip">🌐 .po .strings .resx</span>
+      <span class="chip">📕 PDF</span>
+      <span class="chip">🖼️ Imagens</span>
+      <span class="chip">🎵 Áudio</span>
+      <span class="chip">🎬 Vídeo</span>
+      <span class="chip">🎮 .iso .bin .dat .nds .3ds .nsp .xci</span>
+      <span class="chip">📦 .zip .rar</span>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Download</div>
+      <h2>Escolha sua plataforma</h2>
+      <p>Os arquivos são publicados direto na página oficial de Releases do GitHub.</p>
+    </div>
+    <div class="dl-grid">
+
+      <div class="dl-card">
+        <h3>🖥️ Desktop <span class="tag">Windows</span></h3>
+        <p class="desc">Instalador completo para Windows 10/11. Não exige conta nem cadastro.</p>
+        <a class="btn btn-primary" href="https://github.com/Shirogoldboy/campfire-tradutor/releases/download/v1.0.0/Campfire.Tradutor.Setup.1.0.0.exe">
+          ⬇️ Baixar instalador (.exe)
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/Shirogoldboy/campfire-tradutor/releases">
+          Ver todas as versões
+        </a>
+
+        <details class="smartscreen">
+          <summary>⚠️ O Windows mostrou um aviso ao instalar?</summary>
+          <div class="body">
+            <p>
+              É o <strong>SmartScreen</strong> avisando que o instalador ainda não tem um certificado
+              de assinatura digital paga — não é uma detecção de vírus ou malware. O código deste
+              aplicativo é desenvolvido inteiramente por nós. Clique em <strong>"Mais informações"</strong>
+              e depois em <strong>"Executar assim mesmo"</strong> pra seguir normalmente.
+            </p>
+            <p>Se quiser conferir a integridade do arquivo (SHA-256):</p>
+            <code class="hash">17a2afc302ea605f7e1d8a1052ed0392b65deed33f1fb3611bcfca109aab657a</code>
+          </div>
+        </details>
+      </div>
+
+      <div class="dl-card">
+        <h3>📱 Mobile <span class="tag">Android</span></h3>
+        <p class="desc">Em breve disponível na Google Play Store. Por enquanto, baixe o APK direto.</p>
+        <a class="btn btn-primary" href="https://github.com/Shirogoldboy/campfire-tradutor/releases/download/v1.0.0/app-release.apk">
+          ⬇️ Baixar APK
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/Shirogoldboy/campfire-tradutor/releases">
+          Ver todas as versões
+        </a>
+
+        <details class="smartscreen">
+          <summary>📋 Verificar integridade do arquivo</summary>
+          <div class="body">
+            <p>Hash SHA-256 do APK:</p>
+            <code class="hash">54fb2ae1f24fb6a821302ed8d795f0e0adcd24cc99cfabad9a1dba55e38dd5a8</code>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Privacidade</div>
+      <h2>Levamos isso a sério</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="icon">🚫</div>
+        <h4>Sem conta</h4>
+        <p>Nenhum cadastro, login ou dado pessoal exigido pra usar o app.</p>
+      </div>
+      <div class="trust-item">
+        <div class="icon">💻</div>
+        <h4>Processamento local</h4>
+        <p>A maior parte do conteúdo é processada no seu próprio dispositivo.</p>
+      </div>
+      <div class="trust-item">
+        <div class="icon">🔑</div>
+        <h4>Suas chaves, com você</h4>
+        <p>Chaves de API ficam armazenadas só localmente — nunca em nossos servidores.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="documentos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Documentos legais</div>
+      <h2>Tudo documentado, sem letras miúdas escondidas</h2>
+    </div>
+    <div class="docs-grid">
+      <a class="doc-link" href="termos-de-uso.html">
+        <span class="ico">📜</span>
+        <span>Termos de Uso<small>Regras de utilização do aplicativo</small></span>
+      </a>
+      <a class="doc-link" href="eula.html">
+        <span class="ico">🔏</span>
+        <span>EULA<small>Contrato de Licença de Usuário Final</small></span>
+      </a>
+      <a class="doc-link" href="politica-de-privacidade.html">
+        <span class="ico">🛡️</span>
+        <span>Política de Privacidade<small>Como tratamos seus dados</small></span>
+      </a>
+      <a class="doc-link" href="politica-do-dicionario.html">
+        <span class="ico">📖</span>
+        <span>Política do Dicionário<small>Regras do dicionário colaborativo</small></span>
+      </a>
+      <a class="doc-link" href="aviso-direitos-autorais.html">
+        <span class="ico">©️</span>
+        <span>Direitos Autorais<small>Marca, identidade visual e propriedade</small></span>
+      </a>
+      <a class="doc-link" href="https://github.com/Shirogoldboy/campfire-tradutor">
+        <span class="ico">🐙</span>
+        <span>Repositório<small>Binários, releases e histórico público</small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="contato" class="alt">
+  <div class="wrap">
+    <div class="contact-box">
+      <h2 style="margin-top:0;">Dúvidas, sugestões ou problemas?</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">Fale direto com quem desenvolve o Campfire.</p>
+      <a class="email" href="mailto:alienraccoonentertainment@gmail.com">alienraccoonentertainment@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      🔥 Campfire Tradutor — desenvolvido por Caio Fabiano da Silva Costa, sob a marca AlienRaccoon Entertainment.<br>
+      Software distribuído sob licença proprietária — ver <a href="eula.html">EULA</a>.
+      Dicionário colaborativo: <a href="https://github.com/Shirogoldboy/campfire-dictionary">campfire-dictionary</a> (CC0).
+    </p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    var saved = localStorage.getItem('campfire-theme');
+    if (saved) root.setAttribute('data-theme', saved);
+
+    toggle.addEventListener('click', function () {
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('campfire-theme', next);
+    });
+  })();
+</script>
+
+</body>
+</html>
