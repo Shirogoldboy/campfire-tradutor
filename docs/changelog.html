@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log de Atualizações — Campfire Tradutor</title>
+<meta name="description" content="Tudo o que mudou em cada versão do Campfire Tradutor, para desktop e mobile.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="index.html" class="brand"><span class="flame">🔥</span> Campfire Tradutor</a>
+    <div class="nav-right">
+      <ul class="navlinks">
+        <li><a href="index.html#como-funciona">Como funciona</a></li>
+        <li><a href="index.html#download">Download</a></li>
+        <li><a href="index.html#documentos">Documentos</a></li>
+        <li><a href="changelog.html">Atualizações</a></li>
+        <li><a href="index.html#contato">Contato</a></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">🌓</button>
+    </div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="wrap">
+    <a href="index.html" class="back-link">← Voltar pro início</a>
+    <h1>📋 Log de Atualizações</h1>
+    <p>O que mudou em cada versão do Campfire Tradutor — desktop e mobile.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="timeline">
+
+      <div class="release">
+        <div class="release-head">
+          <h2>v1.0.0</h2>
+          <span class="release-badge">Lançamento</span>
+          <span class="release-date">11/08/2026</span>
+        </div>
+        <p style="color: var(--text-muted); margin: 0 0 4px;">
+          Primeira versão pública do Campfire Tradutor, para Windows (desktop) e Android (mobile).
+        </p>
+        <ul>
+          <li>Sistema de tradução em três camadas: dicionário colaborativo → tradução automática gratuita → IA (Claude, com chave própria do usuário).</li>
+          <li>Suporte a uma ampla lista de formatos: texto, legendas, planilhas, PDF, imagens, áudio, vídeo, arquivos de localização e até arquivos de jogos.</li>
+          <li>Modo "Arquivo Compactado" (.zip/.rar) no mobile, processado por um servidor cloud próprio — sem precisar deixar o PC ligado.</li>
+          <li>Dicionário colaborativo público: traduções geradas pelo Claude são compartilhadas para beneficiar todos os usuários.</li>
+          <li>Sem conta, sem cadastro — processamento predominantemente local no seu dispositivo.</li>
+          <li>Documentos legais completos: Termos de Uso, EULA, Política de Privacidade, Política do Dicionário e Aviso de Direitos Autorais.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      🔥 Campfire Tradutor — desenvolvido por Caio Fabiano da Silva Costa, sob a marca AlienRaccoon Entertainment.<br>
+      Software distribuído sob licença proprietária — ver <a href="eula.html">EULA</a>.
+      Dicionário colaborativo: <a href="https://github.com/Shirogoldboy/campfire-dictionary">campfire-dictionary</a> (CC0).
+    </p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    var saved = localStorage.getItem('campfire-theme');
+    if (saved) root.setAttribute('data-theme', saved);
+
+    toggle.addEventListener('click', function () {
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('campfire-theme', next);
+    });
+  })();
+</script>
+
+</body>
+</html>
